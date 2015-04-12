@@ -21,6 +21,9 @@ all:
 	$(BISON)
 	$(FLEX)
 	$(CC) $(YACC_FILE).c $(LEXICON_FILE).c $(CFLAGS)
-	
+
+run:
+	./$(NAME)
+
 clean:
 	rm $(NAME) $(YACC_FILE).h  $(YACC_FILE).c $(LEXICON_FILE).c
