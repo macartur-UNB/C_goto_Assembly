@@ -1,0 +1,10 @@
+5+3*2
+//oi
+// oioioioi
+//     oioioos
+/* oisaoisoasi */
+/**/
+/* */
+2+2
+int x;
+int x=2;

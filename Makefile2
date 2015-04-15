@@ -1,0 +1,26 @@
+# executable name
+NAME						= teste
+
+# files
+YACC_FILE					= parse
+LEXICON_FILE				= gramma
+
+#flags
+CC							=	cc
+CFLAGS						= -lm -o $(NAME)
+
+# PROCEDURES STRINGS
+BISON						= bison -d $(YACC_FILE).y
+FLEX						= flex $(LEXICON_FILE).l
+
+# make commands
+all:
+	$(BISON)
+	$(FLEX)
+	$(CC) -o $(NAME) $(YACC_FILE).tab.c lex.yy.c -lfl
+
+run:
+	./$(NAME)
+
+clean:
+	rm $(NAME) $(YACC_FILE).h  $(YACC_FILE).c $(LEXICON_FILE).c

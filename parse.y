@@ -80,7 +80,9 @@ void yyerror(const char *s);
     Others Tokens
 */
 %token END
-
+%token ANYTHING_ELSE
+%token END_INSTRUCTION
+%token VARIABLE_NAME
 
 /*
     Pipe_line Tokens
@@ -89,15 +91,20 @@ void yyerror(const char *s);
 
 
 %%
-
+/* Expressions */
 Start:
     /* EMPTY */
     | Start Line
     ;
+
 Line:
     END
     | Expression END                                    { printf("Result: %f\n",$1); }
-    ;
+    | MultilineCommentarie END                          { printf("Comentario Multiplo\n"); }
+	| LineCommentarie END								{ printf("Comentario Simples\n"); }
+	| VariableInt END									{ printf("Declarando variavel int\n"); }	
+	;
+
 Expression:
     NUMBER                                              { $$ = $1;      }
     | Expression PLUS Expression                        { $$ = $1 + $3; }
@@ -107,14 +114,43 @@ Expression:
     | MINUS Expression %prec NEG                        { $$ = -$1;     }
     | LEFT_PARENTHESIS Expression RIGHT_PARENTHESIS     { $$ = $2;      }
     ;
+
+/* Commentaries */
+MultilineCommentarie:
+    BEGIN_MULTILINE_COMMENT StringComment END_MULTILINE_COMMENT
+    ;
+
+LineCommentarie:
+    LINE_COMMENT StringComment
+	;
+
+StringComment:
+    /* Empty String */
+    | ANYTHING_ELSE
+    ;
+
+/* Variables */
+VariableInt:
+	INT VariableName END_INSTRUCTION
+	| INT VariableName ASSIGNMENT NUMBER END_INSTRUCTION
+	;
+
+VariableName:
+	VARIABLE_NAME
+	;
+
 %%
+
 /* YACC ERROR*/
 void yyerror(const char *s){
+	fprintf(stderr, "error: %s\n", s);
 }
 
 /* YACC MAIN*/
 int main(void)
 {
+    extern FILE* yyin;
+    yyin = fopen("Dados.txt","r");
     yyparse();
 }
 
