@@ -1,5 +1,5 @@
 # executable name
-NAME						= c_goto_assembly.exe
+NAME						= c_goto_assembly
 
 # files
 YACC_FILE					= parse
@@ -9,7 +9,7 @@ C_FILES 					= *.c
 
 #flags
 CC							=	gcc
-CFLAGS						= -lm -o $(NAME)
+CFLAGS						= -lm -o $(NAME) -lfl
 
 # PROCEDURES STRINGS
 BISON						= bison -d 	-o$(YACC_FILE).c $(YACC_FILE).y
