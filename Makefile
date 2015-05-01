@@ -1,33 +1,37 @@
 # executable name
 NAME						= c_goto_assembly
+EXECUTABLE					= bin/$(NAME)
 
-# source path
+# paths
 SOURCE						= src/
+LIB							= lib/
+INCLUDE						= include/
 
 # files
-YACC_FILE					= $(SOURCE)parse
-LEXICON_FILE				= $(SOURCE)gramma
-
-C_FILES 					= *.c 
+YACC_FILE					= parse
+LEXICON_FILE				= gramma
+C_FILES 					= $(SOURCE)*.c 
 
 #flags
 CC							=	gcc
 CFLAGS						= -lm -o $(NAME) -lfl
 
 # PROCEDURES STRINGS
-BISON						= bison -d 	-o$(YACC_FILE).c $(YACC_FILE).y
-FLEX						= flex   	-o$(LEXICON_FILE).c  $(LEXICON_FILE).l
+BISON						= bison -d 	-o   $(SOURCE)$(YACC_FILE).c 	$(LIB)$(YACC_FILE).y
+FLEX						= flex   	-o   $(SOURCE)$(LEXICON_FILE).c  $(LIB)$(LEXICON_FILE).l
 
 # make commands
 all:
 	echo "$(NAME)"
 	$(BISON)
 	$(FLEX)
-	$(CC) $(YACC_FILE).c $(LEXICON_FILE).c $(CFLAGS)
-	rm $(YACC_FILE).c  $(YACC_FILE).h $(LEXICON_FILE).c 
+	$(CC) $(C_FILES) $(CFLAGS) -I $(INCLUDE) -o $(EXECUTABLE)
+	rm $(SOURCE)$(YACC_FILE).c  $(SOURCE)$(YACC_FILE).h $(SOURCE)$(LEXICON_FILE).c 
 
+# run the executable
 run:
-	./$(NAME)
+	./$(EXECUTABLE)	
 
+# clear the executable
 clean:
-	rm $(NAME) $(YACC_FILE).h  $(YACC_FILE).c $(LEXICON_FILE).c
+	rm $(EXECUTABLE) 
