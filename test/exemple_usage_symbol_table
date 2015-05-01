@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "symbol.h"
+#include "symbol_table.h"
+
+int main()
+{
+	Symbol* male = newChar("male",'m');
+
+	Symbol* age = newInt("age",23);
+	Symbol* distance = newLong("distance",2300.00);
+
+	Symbol* weight = newFloat("weight",126.00f);
+
+	SymbolTable* local = newSymbolTable("local"); 
+
+	addSymbol(male,local);
+	addSymbol(age,local);
+	addSymbol(distance,local);
+	addSymbol(weight,local);
+	
+	Symbol*	found = findSymbol("weight", local);
+
+	printf("data_type = %d,name= %s, value = %f",
+		  found->data_type,found->name,found->float_value);
+
+	freeSymbolTable(local);
+	return 0;
+}

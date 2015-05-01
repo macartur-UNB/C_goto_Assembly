@@ -19,11 +19,10 @@ typedef struct SymbolTable
 // Builder to create a empty symbol table
 SymbolTable* newSymbolTable(char* scope);
 
-// method to add a generic new symbol in a symbol_table
+// function to add a generic new symbol in a symbol_table
 void addSymbol( Symbol * symbol,SymbolTable* symbol_table);
-// method used to print a table values
-void printTable(SymbolTable* table);
-// method to free a variable from struct symbol_table
+
+// function to free a variable from struct symbol_table
 void freeSymbolTable(SymbolTable * symbol_table);
 
 // find symbol in a symbol_table

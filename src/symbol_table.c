@@ -1,13 +1,10 @@
 #include <stdlib.h>
 #include "symbol_table.h"
 
-#include <stdio.h>
-
 
 void 
 freeSymbolTable(SymbolTable * symbol_table)
 {
-	printf("liberando a symbol table: %s\n",symbol_table->scope);
 	SymbolTable* table = symbol_table;
 	while( table )
 	{
@@ -79,12 +76,6 @@ createSymbolTable(char* scope, SymbolTable* head, SymbolTable* tail,
 }
 
 
-void printTable(SymbolTable* table){
-	printf("**scope= %s  \n*** name = %s \n*** head = %p\n*** tail = %p \n*** next = %p",
-				table->scope,table->value->name,table->head,table->tail,table->next
-			);
-
-}
 
 
 void 
@@ -93,30 +84,20 @@ addSymbol(Symbol * symbol,SymbolTable* symbol_table)
 
 	if ( ! symbol_table->head )
 	{
-		printf("TABLE EMPTY\n");
-		printf("**added %s**\n",symbol->name);
 		symbol_table->head = symbol_table;
 		symbol_table->tail = symbol_table;
 		symbol_table->value = symbol;
-		printTable(symbol_table);
 		return;
 	}
 
-	SymbolTable* last = symbol_table->tail;
-	SymbolTable* first = symbol_table->head;
-
 	SymbolTable* next = createSymbolTable(symbol_table->scope,
-										  first,
-                                          last,
+										  symbol_table->head,
+                                          symbol_table->tail,
                                           symbol,
 										  NULL);
 
-	
-	last->next = next;
+	symbol_table->tail->next = next;
 	symbol_table->tail = next;
-
-	printf("\nnext = \n");
-	printTable(next);
 }
 
 Symbol*
@@ -125,7 +106,6 @@ findSymbol(char* name,SymbolTable* symbol_table){
 	SymbolTable* ptr = symbol_table;
 	while( ptr)
 	{
-		printf("--%s--\n",ptr->value->name);
 		if(ptr->value->name == name)
 			return ptr->value;
 		ptr = ptr->next;
