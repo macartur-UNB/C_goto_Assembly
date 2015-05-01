@@ -31,9 +31,8 @@ all:
 
 # run the executable
 run:
-	./$(EXECUTABLE)	
+	./$(EXECUTABLE) 
 
 # clear the executable
 clean:
-	rm $(EXECUTABLE) 
-	rmdir bin
+	rm -rf bin
