@@ -1,9 +1,12 @@
 # executable name
 NAME						= c_goto_assembly
 
+# source path
+SOURCE						= src/
+
 # files
-YACC_FILE					= parse
-LEXICON_FILE				= gramma
+YACC_FILE					= $(SOURCE)parse
+LEXICON_FILE				= $(SOURCE)gramma
 
 C_FILES 					= *.c 
 
@@ -21,6 +24,7 @@ all:
 	$(BISON)
 	$(FLEX)
 	$(CC) $(YACC_FILE).c $(LEXICON_FILE).c $(CFLAGS)
+	rm $(YACC_FILE).c  $(YACC_FILE).h $(LEXICON_FILE).c 
 
 run:
 	./$(NAME)
