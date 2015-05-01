@@ -1,0 +1,65 @@
+#include <stdio.h>
+
+#include "symbol.h"
+#include "vector.h"
+
+int main()
+{
+
+    //BUILDING A VECTOR OF SYMBOL_TABLES
+	Vector* vector = newVector();
+    Symbol* found;
+
+    // BUILDING A GLOBAL TABLE
+	SymbolTable* global = newSymbolTable("global"); 
+	addSymbolTable(global,vector);
+
+    //BUILDING A MAIN TABLE
+    SymbolTable* main_function  = newSymbolTable("main");
+    addSymbolTable(main_function,vector);
+
+    //BUILDING A ANOTHER_FUNCTION_TABLES
+    SymbolTable* another_function = newSymbolTable("another_function");    
+    addSymbolTable(another_function,vector);
+
+    //BUILDING A ANY_FUNCTION_TABLES
+    SymbolTable* any_function = newSymbolTable("any_function");   
+    addSymbolTable(any_function,vector);
+
+    // SHOW A VECTOR SIZE AND CAPACITY
+	printf("\nVECTOR(SIZE = %d, CAPACITY = %d)\n",vector->size,vector->capacity);
+
+    // CREATE NEW SYMBOL
+    Symbol* s = newChar("s",'s');
+    Symbol* age = newInt("age",5);
+    Symbol* distance = newLong("distance",2555);
+    Symbol* deep = newFloat("deep",255500.30f);
+
+    // ADD SYMBOL TO GLOBAL
+    if( canAddAtScope("global",s,vector))
+        addSymbolToScope("global",s,vector);
+
+    if(canAddAtScope("global",age,vector))
+        addSymbolToScope("global",age,vector);
+
+    // ADD SYMBOL TO MAIN
+    if( canAddAtScope("main",distance,vector))
+        addSymbolToScope("main",distance,vector);
+
+    if( canAddAtScope("main",deep,vector))
+        addSymbolToScope("main",deep,vector);
+
+    // find symbol in main scope
+    found  = findSymbolFromVector("main","deep",vector);
+    
+    // answer if the s symbol was found
+    if(found == NULL)
+        printf("NOT FOUND\n");
+    else
+        printf("FOUND S :)");
+
+    // free all symbols and tables and the vector pointer
+	freeVector(vector);
+
+	return 0;
+}

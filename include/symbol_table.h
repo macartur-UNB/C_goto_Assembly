@@ -27,14 +27,6 @@ void freeSymbolTable(SymbolTable * symbol_table);
 
 // find symbol in a symbol_table
 Symbol* findSymbol  (char* name,SymbolTable* symbol_table);
-Symbol* findChar	(char* name, char char_value,SymbolTable* symbol_table);
-Symbol* findShort	(char* name, short short_value,SymbolTable* symbol_table);
-Symbol* findInt		(char* name, int int_value,SymbolTable* symbol_table);
-Symbol* findLong	(char* name, long long_value,SymbolTable* symbol_table);
-Symbol* findFloat	(char* name, float float_value,SymbolTable* symbol_table);
-Symbol* findDouble	(char* name, double double_value,SymbolTable* symbol_table);
-Symbol* findPoiter	(char* name, unsigned int ptr_level, Data_type ptr_type,
-					 void* ptr_value,SymbolTable* symbol_table);
 
 // create to generate a generic symbol_table empty
 SymbolTable* 

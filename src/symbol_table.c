@@ -1,12 +1,11 @@
 #include <stdlib.h>
 #include "symbol_table.h"
 
-
 void 
 freeSymbolTable(SymbolTable * symbol_table)
 {
 	SymbolTable* table = symbol_table;
-	while( table )
+	while( table != NULL )
 	{
 		freeSymbol(table->value);
 		SymbolTable* next = table->next;
@@ -82,7 +81,7 @@ void
 addSymbol(Symbol * symbol,SymbolTable* symbol_table)
 {
 
-	if ( ! symbol_table->head )
+	if ( symbol_table->head == NULL )
 	{
 		symbol_table->head = symbol_table;
 		symbol_table->tail = symbol_table;
@@ -102,144 +101,17 @@ addSymbol(Symbol * symbol,SymbolTable* symbol_table)
 
 Symbol*
 findSymbol(char* name,SymbolTable* symbol_table){
-	
-	SymbolTable* ptr = symbol_table;
-	while( ptr)
+		
+	if (symbol_table == NULL &&  symbol_table->head !=NULL || name == NULL)
+		return NULL;
+
+	SymbolTable* next = symbol_table;
+
+	while(next)
 	{
-		if(ptr->value->name == name)
-			return ptr->value;
-		ptr = ptr->next;
-	}
-	return NULL;
-
-}
-
-Symbol* 
-findChar	(char* name, char char_value,SymbolTable* symbol_table)
-{
-	SymbolTable* next = symbol_table->next;	
-
-	while(next)	
-	{
-		Symbol* symbol = symbol_table->value;
-
-		if( name && symbol->name == name || 
-			char_value && symbol->char_value == char_value)
-			return symbol;
+		if( next->value->name == name  )
+			return next->value;
 		next = next->next;
 	}
 	return NULL;
-
 }
-
-Symbol* 
-findShort	(char* name, short short_value,SymbolTable* symbol_table)
-{
-	SymbolTable* next = symbol_table->next;	
-
-	while(next)	
-	{
-		Symbol* symbol = symbol_table->value;
-
-		if( name && symbol->name == name || 
-			short_value && symbol->short_value == short_value)
-			return symbol;
-		next = next->next;
-	}
-	return  NULL;
-
-}
-
-Symbol* 
-findInt		(char* name, int int_value,SymbolTable* symbol_table)
-{
-	SymbolTable* next = symbol_table->next;	
-
-	while(next)	
-	{
-		Symbol* symbol = symbol_table->value;
-
-		if( name && symbol->name == name || 
-			int_value && symbol->int_value == int_value)
-			return symbol;
-		next = next->next;
-	}
-	return NULL;
-
-}
-
-Symbol* 
-findLong	(char* name, long long_value,SymbolTable* symbol_table)
-{
-	SymbolTable* next = symbol_table->next;	
-
-	while(next)	
-	{
-		Symbol* symbol = symbol_table->value;
-
-		if( name && symbol->name == name || 
-			long_value && symbol->long_value == long_value)
-			return symbol;
-		next = next->next;
-	}
-	return NULL;
-
-}
-
-Symbol* 
-findFloat	(char* name, float float_value,SymbolTable* symbol_table)
-{
-	SymbolTable* next = symbol_table->next;	
-
-	while(next)	
-	{
-		Symbol* symbol = symbol_table->value;
-
-		if( name && symbol->name == name || 
-			float_value && symbol->float_value == float_value)
-			return symbol;
-		next = next->next;
-	}
-	return NULL;
-
-}
-
-Symbol* 
-findDouble	(char* name, double double_value,SymbolTable* symbol_table)
-{
-	SymbolTable* next = symbol_table->next;	
-
-	while(next)	
-	{
-		Symbol* symbol = symbol_table->value;
-
-		if( name && symbol->name == name || 
-			double_value && symbol->double_value == double_value)
-			return symbol;
-		next = next->next;
-	}
-	return NULL;
-
-}
-
-Symbol* 
-findPoiter	(char* name, unsigned int ptr_level, Data_type ptr_type,
-					 void* ptr_value,SymbolTable* symbol_table)
-{
-	SymbolTable* next = symbol_table->next;	
-
-	while(next)	
-	{
-		Symbol* symbol = symbol_table->value;
-
-		if( name && symbol->name == name || 
-			ptr_value && symbol->ptr_value == ptr_value &&
-			ptr_type && symbol->ptr_type == ptr_type &&
-			ptr_level && symbol->ptr_level == ptr_level	)
-			return symbol;
-		next = next->next;
-	}
-	return NULL;
-
-}
-
