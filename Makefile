@@ -23,6 +23,7 @@ FLEX						= flex   	-o   $(SOURCE)$(LEXICON_FILE).c  $(LIB)$(LEXICON_FILE).l
 # make commands
 all:
 	echo "$(NAME)"
+	mkdir bin
 	$(BISON)
 	$(FLEX)
 	$(CC) $(C_FILES) $(CFLAGS) -I $(INCLUDE) -o $(EXECUTABLE)
@@ -35,3 +36,4 @@ run:
 # clear the executable
 clean:
 	rm $(EXECUTABLE) 
+	rmdir bin
