@@ -1,6 +1,31 @@
 #include <stdlib.h>
 #include "symbol_table.h"
 
+#include <stdio.h>
+
+
+void 
+freeSymbolTable(SymbolTable * symbol_table)
+{
+	printf("liberando a symbol table: %s\n",symbol_table->scope);
+	SymbolTable* table = symbol_table;
+	while( table )
+	{
+		freeSymbol(table->value);
+		SymbolTable* next = table->next;
+		free(table);
+		table = next;
+	}
+	table = NULL;
+	symbol_table	= NULL;
+}
+
+SymbolTable* 
+newSymbolTable( char* scope )
+{
+	return createSymbolTable(scope,NULL,NULL,NULL,NULL);
+}
+
 
 SymbolTable* 
 createSymbolTable(char* scope, SymbolTable* head, SymbolTable* tail,
@@ -21,7 +46,7 @@ createSymbolTable(char* scope, SymbolTable* head, SymbolTable* tail,
 	}
 	else
 	{
-		result->head =  (SymbolTable*)head;
+		result->head =  head;
 	}
 	
 	if (! tail )
@@ -30,7 +55,7 @@ createSymbolTable(char* scope, SymbolTable* head, SymbolTable* tail,
 	}
 	else
 	{
-		result->tail =  (SymbolTable*)tail;
+		result->tail =  tail;
 	}
 	
 	if (!value){
@@ -47,39 +72,194 @@ createSymbolTable(char* scope, SymbolTable* head, SymbolTable* tail,
 	}
 	else
 	{
-		result->next =  (SymbolTable*)next;
+		result->next =  next;
 	}	
 
 	return result; 
 }
 
-void 
-addSymbol(SymbolTable* symbol_table, Symbol * symbol)
-{
-	if( symbol_table->head == NULL )		
-		symbol_table->value = symbol;
-		symbol_table->head =  (SymbolTable*)symbol_table;
-		symbol_table->tail =  (SymbolTable*)symbol_table;
-	}
-		// pega o ultimo elemento para colocar o simbolo como ultimo elemento
-		SymbolTable* head = (SymbolTable*) symbol_table->head;
-		SymbolTable* tail = (SymbolTable*) symbol_table->head->tail;
 
-		//   sem escopo, sem head, sem tail , value, sem next
-		SymbolTable* next = createSymbolTable(NULL,NULL,NULL,symbol,NULL);
-		head->tail = next;
-		tail->next = next;
+void printTable(SymbolTable* table){
+	printf("**scope= %s  \n*** name = %s \n*** head = %p\n*** tail = %p \n*** next = %p",
+				table->scope,table->value->name,table->head,table->tail,table->next
+			);
+
 }
 
+
 void 
-FreeSymbolTable(SymbolTable * symbol_table)
+addSymbol(Symbol * symbol,SymbolTable* symbol_table)
 {
-	while( symbol_table->next )
+
+	if ( ! symbol_table->head )
 	{
-		freeSymbol(symbol_table->value);
-		SymbolTable* next = (SymbolTable*) symbol_table->next;
-		free(symbol_table);
-		symbol_table = next;
+		printf("TABLE EMPTY\n");
+		printf("**added %s**\n",symbol->name);
+		symbol_table->head = symbol_table;
+		symbol_table->tail = symbol_table;
+		symbol_table->value = symbol;
+		printTable(symbol_table);
+		return;
 	}
-	symbol_table	= NULL;
+
+	SymbolTable* last = symbol_table->tail;
+	SymbolTable* first = symbol_table->head;
+
+	SymbolTable* next = createSymbolTable(symbol_table->scope,
+										  first,
+                                          last,
+                                          symbol,
+										  NULL);
+
+	
+	last->next = next;
+	symbol_table->tail = next;
+
+	printf("\nnext = \n");
+	printTable(next);
 }
+
+Symbol*
+findSymbol(char* name,SymbolTable* symbol_table){
+	
+	SymbolTable* ptr = symbol_table;
+	while( ptr)
+	{
+		printf("--%s--\n",ptr->value->name);
+		if(ptr->value->name == name)
+			return ptr->value;
+		ptr = ptr->next;
+	}
+	return NULL;
+
+}
+
+Symbol* 
+findChar	(char* name, char char_value,SymbolTable* symbol_table)
+{
+	SymbolTable* next = symbol_table->next;	
+
+	while(next)	
+	{
+		Symbol* symbol = symbol_table->value;
+
+		if( name && symbol->name == name || 
+			char_value && symbol->char_value == char_value)
+			return symbol;
+		next = next->next;
+	}
+	return NULL;
+
+}
+
+Symbol* 
+findShort	(char* name, short short_value,SymbolTable* symbol_table)
+{
+	SymbolTable* next = symbol_table->next;	
+
+	while(next)	
+	{
+		Symbol* symbol = symbol_table->value;
+
+		if( name && symbol->name == name || 
+			short_value && symbol->short_value == short_value)
+			return symbol;
+		next = next->next;
+	}
+	return  NULL;
+
+}
+
+Symbol* 
+findInt		(char* name, int int_value,SymbolTable* symbol_table)
+{
+	SymbolTable* next = symbol_table->next;	
+
+	while(next)	
+	{
+		Symbol* symbol = symbol_table->value;
+
+		if( name && symbol->name == name || 
+			int_value && symbol->int_value == int_value)
+			return symbol;
+		next = next->next;
+	}
+	return NULL;
+
+}
+
+Symbol* 
+findLong	(char* name, long long_value,SymbolTable* symbol_table)
+{
+	SymbolTable* next = symbol_table->next;	
+
+	while(next)	
+	{
+		Symbol* symbol = symbol_table->value;
+
+		if( name && symbol->name == name || 
+			long_value && symbol->long_value == long_value)
+			return symbol;
+		next = next->next;
+	}
+	return NULL;
+
+}
+
+Symbol* 
+findFloat	(char* name, float float_value,SymbolTable* symbol_table)
+{
+	SymbolTable* next = symbol_table->next;	
+
+	while(next)	
+	{
+		Symbol* symbol = symbol_table->value;
+
+		if( name && symbol->name == name || 
+			float_value && symbol->float_value == float_value)
+			return symbol;
+		next = next->next;
+	}
+	return NULL;
+
+}
+
+Symbol* 
+findDouble	(char* name, double double_value,SymbolTable* symbol_table)
+{
+	SymbolTable* next = symbol_table->next;	
+
+	while(next)	
+	{
+		Symbol* symbol = symbol_table->value;
+
+		if( name && symbol->name == name || 
+			double_value && symbol->double_value == double_value)
+			return symbol;
+		next = next->next;
+	}
+	return NULL;
+
+}
+
+Symbol* 
+findPoiter	(char* name, unsigned int ptr_level, Data_type ptr_type,
+					 void* ptr_value,SymbolTable* symbol_table)
+{
+	SymbolTable* next = symbol_table->next;	
+
+	while(next)	
+	{
+		Symbol* symbol = symbol_table->value;
+
+		if( name && symbol->name == name || 
+			ptr_value && symbol->ptr_value == ptr_value &&
+			ptr_type && symbol->ptr_type == ptr_type &&
+			ptr_level && symbol->ptr_level == ptr_level	)
+			return symbol;
+		next = next->next;
+	}
+	return NULL;
+
+}
+

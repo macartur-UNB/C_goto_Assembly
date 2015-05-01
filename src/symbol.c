@@ -1,5 +1,5 @@
 #include "symbol.h"
-
+#include <stdio.h>
 
 Symbol* 
 createSymbol()
@@ -97,6 +97,7 @@ newPoiter(char* name, unsigned int ptr_level,
 void 
 freeSymbol(Symbol* symbol)
 {
+	printf("  -  simbolo liberado  %s \n",symbol->name);
 	free(symbol);
 	symbol = NULL;	
 }
