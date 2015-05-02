@@ -1,1 +1,19 @@
-5
+// testes
+
+int value; 
+short value; 
+/*
+
+	Comment testes
+*/
+char value; 
+// testes
+float value; 
+
+int main (){
+	int age;	
+	char character;
+	return 0;
+}
+
+

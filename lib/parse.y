@@ -14,15 +14,31 @@
 %}
 
 %union{
+    int int_value;
 	char character;
 	char* string;
-	int int_value;
-	float float_value;
-	double double_value;
 }
 
-%token <int_value> NUMBER
+
+/* variables */
+%token <string> NUMBER
+%token <string> STRING
+
+
+/*
+	C TYPE
+*/
+%token <string> C_TYPE
+
+/*
+     OTHERS	
+*/
+%token RETURN
+%token SEPARATOR COMMA
 %token END
+%token START_PARENTHESES END_PARENTHESES
+%token START_KEYS END_KEYS
+%token START_BRAKETS END_BRAKETS
 
 /*
     Pipe_line Tokens
@@ -33,17 +49,27 @@
 
 /* Expressions */
 Start:
-	
 	| Start Line
 	;
 Line:
-	END
-	| Expression END
+	 Declaration 
+	;
+Declaration:
+	Variable 
+	| Function START_KEYS  Scope  END_KEYS
+	;
+Scope:
+	/* empty */							{ printf("scope");  }
+	| Scope Variable
+	| Scope RETURN NUMBER SEPARATOR		{ printf("RETURN");  } 
+	;
+Function:
+	C_TYPE STRING 	START_PARENTHESES	END_PARENTHESES	{ printf("FUNCTION");   }	
+	;
+Variable:
+	C_TYPE STRING SEPARATOR				{ printf("VARIABLES");	}
 	;
 
-Expression:
-	NUMBER   {printf("%d", $1);}
-	;
 
 %%
 
@@ -55,6 +81,9 @@ void yyerror(const char *s){
 /* YACC MAIN*/
 int main(void)
 {
+
+	Vector* vector = newVector(); 	
+
     extern FILE* yyin;
     yyin = fopen("Dados.txt","r");
     yyparse();
