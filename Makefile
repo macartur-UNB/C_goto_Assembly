@@ -22,6 +22,7 @@ FLEX						= flex   	-o   $(SOURCE)$(LEXICON_FILE).c  $(LIB)$(LEXICON_FILE).l
 
 # make commands
 all:
+	@make clean
 	echo "$(NAME)"
 	mkdir bin
 	$(BISON)

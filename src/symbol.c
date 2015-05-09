@@ -99,4 +99,3 @@ freeSymbol(Symbol* symbol)
 	free(symbol);
 	symbol = NULL;	
 }
-
