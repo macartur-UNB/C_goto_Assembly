@@ -75,13 +75,14 @@ char* extract_data_type(char* data_type)
 	result = (char*) malloc(k*sizeof(char));
 	for(i=0;i<k;i++)
 	{
-		if (data_type[i] == ' ') break;
+		if (data_type[i] == ' '||
+			data_type[i] == ';'	) break;
 		result[i] = data_type[i];
 	}
 	result[i] = '\0';
-
 	return result;
 }
+
 int get_ptr_level(char* data_type)
 {
 	int count,i;
@@ -105,30 +106,35 @@ int get_data_type_id(char* data_type)
 
 	return -1;
 }
-void add_symbol_to_scopes(char* c_type,char* string,char* value,char* scope)
+
+void add_symbol_to_scopes(char* c_type,
+						  char* string,
+						  char* value,
+						  char* scope)
 {
 		int data_type = get_data_type_id(c_type);
+		char* literal = extract_data_type(string);
 		Symbol* current;
 
 		switch( data_type)
 		{
 		case CHAR_T:
-			current = newChar(string,(char)value[0]);
+			current = newChar(literal,(char)value[0]);
 			break;
 		case SHORT_T:
-			current = newShort(string,(int)atoi(value));
+			current = newShort(literal,(int)atoi(value));
 			break;
 		case INT_T:
-			current = newInt(string,atoi(value));
+			current = newInt(literal,atoi(value));
 			break;
 		case DOUBLE_T:
-			current = newDouble(string,strtod(value,NULL)); 
+			current = newDouble(literal,strtod(value,NULL)); 
 			break;
 		case FLOAT_T:
-			current = newFloat(string,atof(value));
+			current = newFloat(literal,atof(value));
 			break;
 		case LONG_T:
-			current = newLong(string,strtol(value,NULL,10));
+			current = newLong(literal,strtol(value,NULL,10));
 			break;
 		case PTR_T:
 			/*
@@ -138,10 +144,14 @@ void add_symbol_to_scopes(char* c_type,char* string,char* value,char* scope)
 		}	
 		addSymbolToScope(scope,current,scopes);
 }
+
 void
 close_bss()
 {
 	SymbolTable* current = findTable("__global",scopes); 
-	if(!current)
-		printf("NULL");
+	while(current != NULL)
+	{
+		strcmp(bss_section,current->value->name);
+		current = current->next;
+	}
 }

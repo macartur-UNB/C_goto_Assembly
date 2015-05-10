@@ -20,7 +20,4 @@ Symbol* findSymbol  (char* name,SymbolTable* symbol_table);
 SymbolTable*
 createSymbolTable(char* scope, SymbolTable* head, SymbolTable* tail,Symbol* value,SymbolTable* next);
 
-
-SymbolTable* next(SymbolTable* symbol_table);
-
 #endif

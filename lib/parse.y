@@ -47,34 +47,32 @@
 %%
 
 Start:
-    | Start Line                         
+    | Start Line                        {printf("1");} 
 	;
 Line:
-	 Declaration 
+	 Declaration						     {printf("2");} 
+ 
 	;
 Declaration:
-	Global_declaration                      {  close_bss();printf("HERE"); }
-	| Function START_KEYS  Scope  END_KEYS  {    }
+	Global_declaration                        {printf("3");} 
+	| Function START_KEYS  Scope  END_KEYS   {printf("4");} 
 	;
 Scope:
 	/* empty */							
-	| Scope Local_declaration
-	| Scope RETURN NUMBER SEMICOLON	
+	| Scope Local_declaration 				{printf("5");} 
+	| Scope RETURN NUMBER SEMICOLON   {printf("6");}	
 	;
 Function:
-	C_TYPE STRING 	START_PARENTHESES	END_PARENTHESES	
+	C_TYPE STRING 	START_PARENTHESES	END_PARENTHESES	 {printf("7");}
 	;
 Global_declaration:
-	C_TYPE STRING SEMICOLON {  
-                                add_symbol_to_scopes($1,$2,"__global");
-                                /*print*/
-                                printf("GLOBAL VARIABLE: %s - %s ",$1,$2);  
+	C_TYPE STRING SEMICOLON {   
+                                add_symbol_to_scopes($1,$2,"1","__global");{printf("8");}
                             }
 	;
 Local_declaration:
 	C_TYPE STRING SEMICOLON {   
-                                add_symbol_to_scopes($1,$2,"__local");    
-                                printf("INNER VARIABLE: %s - %s ",$1,$2);  
+                                add_symbol_to_scopes($1,$2,"1","__local");    {printf("9");}
                                 }
 	;
     

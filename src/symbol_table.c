@@ -115,8 +115,3 @@ findSymbol(char* name,SymbolTable* symbol_table){
 	}
 	return NULL;
 }
-
-SymbolTable* next(SymbolTable* symbol_table)
-{
-	return symbol_table->next;
-}

@@ -1,6 +1,7 @@
 #include "vector.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 Vector* 
 newVector()
@@ -45,12 +46,18 @@ SymbolTable*
 findTable(char* scope,Vector* vector)
 {
 	if(vector->size == 0 && vector->tables[0] == NULL) 
+	{
 		return NULL;
+	}
 	int count = 0;	
+
 	while(  count < vector->size)	
 	{
-		if(vector->tables[count]->scope == scope )
-			return vector->tables[count]; 
+		if (!strcmp(vector->tables[count]->scope,scope))
+		{
+			SymbolTable* t = vector->tables[count];
+			return t; 
+		}
 		count++;
 	}
 	return NULL;
@@ -74,7 +81,7 @@ void
 addSymbolToScope(char* scope,Symbol* symbol,Vector* vector )
 {
 	SymbolTable* table = findTable(scope,vector);
-	if (table != NULL){
+	if (table  != NULL ){
 		addSymbol(symbol,table);
 	}
 }

@@ -20,9 +20,12 @@ void close_bss();
  *
  *
  * */
-void add_symbol_scopes();
 //void add_bss_section(Symbol* symbol);
 //void get_type_of_symbol();
+void add_symbol_to_scopes(char* c_type,
+						  char* string,
+						  char* value,
+						  char* scope);
 
 /*
  *	EXTRACT INFORMATION FROM STRING
