@@ -10,9 +10,17 @@ void init_asm();
 void init_bss();
 void init_data();
 void init_text();
+
 void open_asm();
 void close_asm();
-void close_bss();
+/**
+ *
+ *	ENDING ALL SECTIONS
+ *
+ * */
+void close_bss();  
+void close_data();
+void close_text();
 
 /*
  *
@@ -20,12 +28,11 @@ void close_bss();
  *
  *
  * */
-//void add_bss_section(Symbol* symbol);
-//void get_type_of_symbol();
 void add_symbol_to_scopes(char* c_type,
 						  char* string,
 						  char* value,
 						  char* scope);
+void declare_bss(char* name,int type);
 
 /*
  *	EXTRACT INFORMATION FROM STRING

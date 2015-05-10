@@ -52,6 +52,7 @@ return                  {      return RETURN;                       }
 %%
 
 int yywrap() {
-	return 0;
+	close_asm();
+	return 1;
 }
 

@@ -1,13 +1,7 @@
-/*
-    Headers Required
-*/
-
 %{
-/*      C_HEADER        */
 #include <stdio.h>
 #include <stdlib.h>
 
-/*      INTERNAL_HEADER */
 #include "global.h"
 #include <string.h>
 %}
@@ -26,22 +20,17 @@
 %token <string> C_TYPE
 
 
-/*
-    COMPARE
-*/
 %token BIGGER_THAN LESS_THAN 
 %token BIGGER_OR_EQUAL LESS_OR_EQUAL
 %token EQUAL DIFFERENT NOT
 
 %token RETURN
+%token END
 %token SEMICOLON COMMA
 %token START_PARENTHESES END_PARENTHESES
 %token START_KEYS END_KEYS
 %token START_BRAKETS END_BRAKETS
 
-/*
-    Pipe_line Tokens
-*/
 %start Start
 
 %%
@@ -54,7 +43,7 @@ Line:
  
 	;
 Declaration:
-	Global_declaration                        {printf("3");} 
+	Global_declaration                        {printf("3");close_bss();} 
 	| Function START_KEYS  Scope  END_KEYS   {printf("4");} 
 	;
 Scope:
@@ -66,14 +55,10 @@ Function:
 	C_TYPE STRING 	START_PARENTHESES	END_PARENTHESES	 {printf("7");}
 	;
 Global_declaration:
-	C_TYPE STRING SEMICOLON {   
-                                add_symbol_to_scopes($1,$2,"1","__global");{printf("8");}
-                            }
+	C_TYPE STRING SEMICOLON {add_symbol_to_scopes($1,$2,"1","__global");printf("8");}
 	;
 Local_declaration:
-	C_TYPE STRING SEMICOLON {   
-                                add_symbol_to_scopes($1,$2,"1","__local");    {printf("9");}
-                                }
+	C_TYPE STRING SEMICOLON {add_symbol_to_scopes($1,$2,"1","__local");    printf("9");}
 	;
     
 
@@ -83,6 +68,7 @@ Local_declaration:
 void yyerror(const char *s){
 	fprintf(stderr, "error: %s\n", s);
 }
+
 
 /* YACC MAIN*/
 int main(void)

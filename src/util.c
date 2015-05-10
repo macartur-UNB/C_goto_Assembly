@@ -28,13 +28,14 @@ void open_asm()
 
 void close_asm()
 {
+	open_asm();
 	if ( bss_section != NULL )
 		fprintf(assembly_file,"%s",bss_section);
     if (data_section != NULL)
 		fprintf(assembly_file,"%s",data_section);	
 	if (text_section != NULL)
 		fprintf(assembly_file,"%s",text_section);
-	/*  free all symbols*/
+
 	freeVector(scopes);
 	fclose(assembly_file);
 }
@@ -53,15 +54,16 @@ void init_data()
 
 void init_text(char* global_section)
 {
+	char global[25];
 	int text_size = 10000;
 	text_section = malloc(text_size*sizeof(char));
 	strcpy(text_section,"section .text\n");
-	sprintf(text_section,"\tglobal %s",global_section);
+	sprintf(global,"\tglobal %s\n",global_section);
+	strcat(text_section,global);
 }
 
 void init_asm()
 {
-	open_asm();
 	scopes = newVector();
 	addSymbolTable(newSymbolTable("__global"),scopes);
 }
@@ -145,13 +147,52 @@ void add_symbol_to_scopes(char* c_type,
 		addSymbolToScope(scope,current,scopes);
 }
 
+
+
+void declare_bss(char* name, int data_type)
+{
+		char aux[20];
+		sprintf(aux,"\t%s",name);
+		strcat(bss_section,aux);
+		switch(data_type)
+		{
+		case CHAR_T: 
+			strcat(bss_section," resb 1 \n");break;
+		case SHORT_T:
+			strcat(bss_section," resw 1 \n");break;
+		case INT_T:
+			strcat(bss_section," resw 1 \n");break;
+		case LONG_T:
+			strcat(bss_section, " resd 1 \n");break;
+		case FLOAT_T:
+			strcat(bss_section, " resd 1 \n");break;
+		case DOUBLE_T:
+			strcat(bss_section ," resd 1 \n" );break;
+		case PTR_T: 
+			strcat(bss_section," resw 1 \n");break;
+		}
+}
+
 void
 close_bss()
 {
+	init_bss();
+	char variable[1000];
 	SymbolTable* current = findTable("__global",scopes); 
 	while(current != NULL)
 	{
-		strcmp(bss_section,current->value->name);
+		declare_bss(current->value->name,
+					current->value->data_type);
 		current = current->next;
 	}
+}
+
+void
+close_data()
+{
+	
+}
+void close_text()
+{
+
 }

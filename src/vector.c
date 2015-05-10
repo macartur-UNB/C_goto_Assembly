@@ -96,7 +96,7 @@ canAddAtScope(char* scope,Symbol* symbol, Vector* vector)
 		return 1;
 
 	Symbol*s = findSymbol( symbol->name  ,table  );
-	if(!s)
+	if(s != NULL)
 		return 1;
 
 	return 0;

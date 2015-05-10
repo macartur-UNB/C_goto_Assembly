@@ -28,7 +28,7 @@ createSymbolTable(char* scope, SymbolTable* head, SymbolTable* tail,
 									 Symbol* value,SymbolTable* next  )
 {
 	SymbolTable* result = (SymbolTable*) malloc(sizeof(SymbolTable)); 
-	if(! scope ){
+	if( scope == NULL ){
 		result->scope = NULL;
 	}
 	else
@@ -36,7 +36,7 @@ createSymbolTable(char* scope, SymbolTable* head, SymbolTable* tail,
 		result->scope =  scope;
 	}
 	
-	if (! head )
+	if ( head == NULL )
 	{
 		result->head = NULL;
 	}
@@ -45,7 +45,7 @@ createSymbolTable(char* scope, SymbolTable* head, SymbolTable* tail,
 		result->head =  head;
 	}
 	
-	if (! tail )
+	if (tail == NULL )
 	{
 		result->tail = NULL;
 	}
@@ -54,7 +54,7 @@ createSymbolTable(char* scope, SymbolTable* head, SymbolTable* tail,
 		result->tail =  tail;
 	}
 	
-	if (!value){
+	if (value == NULL){
 		result->value = NULL;
 	}
 	else
@@ -62,7 +62,7 @@ createSymbolTable(char* scope, SymbolTable* head, SymbolTable* tail,
 		result->value =  value;
 	}
 	
-	if (!next)
+	if (next == NULL) 
 	{
 		result->next = NULL;
 	}
@@ -109,7 +109,7 @@ findSymbol(char* name,SymbolTable* symbol_table){
 
 	while(next)
 	{
-		if( next->value->name == name  )
+		if( !strcmp(next->value->name,name)  )
 			return next->value;
 		next = next->next;
 	}
