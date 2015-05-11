@@ -16,7 +16,7 @@ TEST_SRC					= $(TEST)*.c
 
 #flags
 CC							=	gcc
-CFLAGS						= -lm -o $(NAME) -lfl
+CFLAGS						= -lm -lfl
 CUNIT_FLAGS					= -lcunit -lcurses 
 
 # PROCEDURES STRINGS
@@ -25,16 +25,15 @@ FLEX						= flex   	-o   $(SOURCE)$(LEXICON_FILE).c  $(LIB)$(LEXICON_FILE).l
 
 # make commands
 all:
-	mkdir bin
 	$(BISON)
 	$(FLEX)
 	$(CC) $(C_FILES) $(CFLAGS) -I $(INCLUDE) -o $(EXECUTABLE)
 	rm $(SOURCE)$(YACC_FILE).c  $(SOURCE)$(YACC_FILE).h $(SOURCE)$(LEXICON_FILE).c 
 
 # run tests
-#run_test:
-#	$(CC) $(CFLAGS) $(CUNIT_FLAGS) $(TEST_SRC) -I $(INCLUDE)  -o $(TEST)test 
-#	./test/test
+run_test:
+	$(CC) -lm $(TEST_SRC) $(C_FILES) -o $(TEST)test $(CUNIT_FLAGS) -I $(INCLUDE) 
+	./test/test
 
 # run the executable
 run:
@@ -43,4 +42,4 @@ run:
 
 # clear the executable
 clean:
-	rm -rf bin test/test main.asm
+	rm -rf test/test main.asm $(EXECUTABLE) 
