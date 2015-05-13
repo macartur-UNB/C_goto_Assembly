@@ -112,6 +112,7 @@ int get_data_type_id(char* data_type)
 void add_symbol_to_scopes(char* c_type,
 						  char* string,
 						  char* value,
+						  int initialized,
 						  char* scope)
 {
 		int data_type = get_data_type_id(c_type);
@@ -121,22 +122,22 @@ void add_symbol_to_scopes(char* c_type,
 		switch( data_type)
 		{
 		case CHAR_T:
-			current = newChar(literal,(char)value[0]);
+			current = newChar(literal,(char)value[0],initialized);
 			break;
 		case SHORT_T:
-			current = newShort(literal,(int)atoi(value));
+			current = newShort(literal,(int)atoi(value),initialized);
 			break;
 		case INT_T:
-			current = newInt(literal,atoi(value));
+			current = newInt(literal,atoi(value),initialized);
 			break;
 		case DOUBLE_T:
-			current = newDouble(literal,strtod(value,NULL)); 
+			current = newDouble(literal,strtod(value,NULL),initialized); 
 			break;
 		case FLOAT_T:
-			current = newFloat(literal,atof(value));
+			current = newFloat(literal,atof(value),initialized);
 			break;
 		case LONG_T:
-			current = newLong(literal,strtol(value,NULL,10));
+			current = newLong(literal,strtol(value,NULL,10),initialized);
 			break;
 		case PTR_T:
 			/*
@@ -196,3 +197,11 @@ void close_text()
 {
 
 }
+
+void 
+declarate_data(char* name, int data_type, void* value)
+{
+	init_data();
+}
+
+

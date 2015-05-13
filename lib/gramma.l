@@ -3,18 +3,40 @@
 
 #include "global.h"
 #include "parse.h"
+
+
+
+/*
+   
+   TODO: falta tratar identifier com letra+numero+letra
+         falta tratar sizeof em Expression
+*/
+
+
+
+
 %}
 
 white               [ \t]+
 digit               [0-9]
-integer             {digit}+
 exponant            [eE][+-]?{integer}
-number              {integer}("."{integer})?{exponant}?
 line_comment        \/\/.*
 multi_line_comment  \/\*([^*]|\*[^/])*\*+\/ 
-identifier              [a-z|A-Z|_]*
 pre_processor       #.*
-string				{identifier}
+
+char                \'.\' 
+identifier          [a-z|A-Z|_]*
+string              \".*\" 
+
+types			    char|int|short|double|float	
+ctype               {types}\**
+
+integer             (-)?{digit}+
+double              {integer}("."{integer}){exponant}?
+float               {integer}("."{integer})?{exponant}?f
+
+literal             {char}|{string}|{integer}|{double}|{float}
+
 
 %%
 
@@ -22,8 +44,7 @@ string				{identifier}
 {pre_processor}         {   /*  PRE_PROCESSOR IGNORED*/             }
 {line_comment}          {   /*    LINE COMMENT IGNORED*/            }
 {multi_line_comment}    {   /*    MULTILINE COMMENT IGNORED*/       }
-{number}                { yylval.string =  yytext ; return NUMBER;  }
-
+{literal}                { yylval =  strdup(yytext) ; return LITERAL;  }
 "("                     { return   START_PARENTHESES;               }
 ")"                     { return   END_PARENTHESES;                 }
 "{"                     { return   START_KEYS;                      }
@@ -32,7 +53,11 @@ string				{identifier}
 "]"                     {  return  END_BRAKETS;                     }
 ";"                     {   return SEMICOLON;                       }
 ","                     {   return COMMA;                           }
-
+"+"                     {       return PLUS;                        }
+"-"                     {       return MINUS;                       }
+"*"                     {       return TIMES;                       }
+"/"                     {       return DIV;                         }
+"%"                     {       return MOD;                         }
 ">"						{	return BIGGER_THAN;						}
 "<"						{	return LESS_THAN;						}
 ">="					{	return BIGGER_OR_EQUAL;					}
@@ -40,14 +65,9 @@ string				{identifier}
 "=="					{	return EQUAL;							}
 "!="					{   return DIFFERENT;						}
 "!"						{	return NOT;								}
-
-int                     { yylval.string= yytext ; return C_TYPE;    }
-char                    { yylval.string= yytext ; return C_TYPE;    }
-short                   { yylval.string= yytext ; return C_TYPE;    }
-double                  { yylval.string= yytext ; return C_TYPE;    }
-float                   { yylval.string= yytext ; return C_TYPE;    }
+{ctype}                 { yylval= strdup(yytext) ; return C_TYPE;    }
 return                  {      return RETURN;                       }
-{string}                { yylval.string = yytext ; return STRING;   }
+{identifier}            { yylval = strdup(yytext); return IDENTIFIER;    }
 
 %%
 

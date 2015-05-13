@@ -9,6 +9,7 @@ typedef struct  Symbol
 {
     Data_type data_type;
     char* name;
+    int initialized;
     unsigned int ptr_level;
     Data_type ptr_type;
     union{
@@ -22,13 +23,13 @@ typedef struct  Symbol
     };
 } Symbol;
 
-Symbol* newChar		(char* name, char char_value);
-Symbol* newShort	(char* name, short short_value);
-Symbol* newInt		(char* name, int int_value);
-Symbol* newLong		(char* name, long long_value);
-Symbol* newFloat	(char* name, float float_value);
-Symbol* newDouble	(char* name, double double_value);
-Symbol* newPoiter	(char* name, unsigned int ptr_level, Data_type ptr_type,void* ptr_value);
+Symbol* newChar		(char* name, char char_value,int initialized);
+Symbol* newShort	(char* name, short short_value,int initialized);
+Symbol* newInt		(char* name, int int_value,int initialized);
+Symbol* newLong		(char* name, long long_value,int initialized);
+Symbol* newFloat	(char* name, float float_value,int initialized);
+Symbol* newDouble	(char* name, double double_value,int initialized);
+Symbol* newPoiter	(char* name, unsigned int ptr_level, Data_type ptr_type,void* ptr_value,int initialized);
 
 Symbol* createSymbol();
 void freeSymbol(Symbol* symbol);

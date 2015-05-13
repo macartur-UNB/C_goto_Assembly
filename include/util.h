@@ -31,8 +31,10 @@ void close_text();
 void add_symbol_to_scopes(char* c_type,
 						  char* string,
 						  char* value,
+						  int initialized,
 						  char* scope);
 void declare_bss(char* name,int type);
+void declarate_data(char* name, int data_type, void* value);
 
 /*
  *	EXTRACT INFORMATION FROM STRING
