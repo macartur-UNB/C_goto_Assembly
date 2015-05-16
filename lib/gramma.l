@@ -65,6 +65,7 @@ literal             {char}|{string}|{integer}|{double}|{float}
 "=="					{	return EQUAL;							}
 "!="					{   return DIFFERENT;						}
 "!"						{	return NOT;								}
+"="                     { return RECEIVE;                           }
 {ctype}                 { yylval= strdup(yytext) ; return C_TYPE;    }
 return                  {      return RETURN;                       }
 {identifier}            { yylval = strdup(yytext); return IDENTIFIER;    }

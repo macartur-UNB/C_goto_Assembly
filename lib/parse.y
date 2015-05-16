@@ -22,7 +22,7 @@
 %right MOD
 
 
-
+%token RECEIVE
 %token BIGGER_THAN LESS_THAN 
 %token BIGGER_OR_EQUAL LESS_OR_EQUAL
 %token EQUAL DIFFERENT NOT
@@ -39,34 +39,55 @@
 %%
 
 Start:
-    | Start Line                        {printf("1");} 
+    | Start Line                     
 	;
 Line:
-	 Declaration						     {printf("2");} 
- 
+	 Declaration					 
 	;
 Declaration:
-	Global_declaration                        {printf("3");close_bss();} 
-	| Function START_KEYS  Scope  END_KEYS   {printf("4");} 
+	Global_declaration                        {close_bss();} 
+    | Function START_KEYS  Scope  END_KEYS   
 	;
 Scope:
 	/* empty */							
-	| Scope Local_declaration 				{printf("5");} 
-	| Scope RETURN LITERAL SEMICOLON   {printf("6");}	
-	| Scope Expression
+	| Scope Local_declaration 			 
+	| Scope RETURN LITERAL SEMICOLON   
+	| Scope Expression SEMICOLON;
 	;
 Function:
-	C_TYPE IDENTIFIER	START_PARENTHESES	END_PARENTHESES	 {printf("7");}
+	C_TYPE IDENTIFIER	START_PARENTHESES	END_PARENTHESES	 {printf("Function: %s", $2);}
 	;
 Global_declaration:
-	C_TYPE IDENTIFIER SEMICOLON {add_symbol_to_scopes($1,$2,"1",1,"__global");printf("8");}
+    /* Global Uninitialized Variable */
+	C_TYPE IDENTIFIER SEMICOLON
+        {
+            add_symbol_to_scopes($1,$2,"1",1,"__global");
+            printf("Global Uninitialized Variable %s", $2);
+        }
+    
+    /* Global Initialized Variable */
+    | C_TYPE IDENTIFIER RECEIVE LITERAL SEMICOLON
+        {
+            printf("Global Initialized Variable %s = %s", $2, $4);
+        }
 	;
 Local_declaration:
-	C_TYPE IDENTIFIER SEMICOLON {add_symbol_to_scopes($1,$2,"1",1,"__local");    printf("9 - %s",$1);}
+	/* Local Uninitialized Variable */
+    C_TYPE IDENTIFIER SEMICOLON 
+        {
+            add_symbol_to_scopes($1,$2,"1",1,"__local");    
+            printf("\tLocal Variable %s",$2);
+        }
+    
+    /* Local Initialized Variable */
+    | C_TYPE IDENTIFIER RECEIVE LITERAL SEMICOLON
+        {
+            printf("\tLocal Initialized Variable %s = %s", $2, $4);
+        }
 	;
 
 Expression:
-    LITERAL { $$ =$1; /* printf("LITERAL %s",$1);*/}
+    LITERAL {$$ = $1;}
 	| START_PARENTHESES Expression END_PARENTHESES { $$ = $2 ;printf("( %s )",$2);   }
 	| Expression PLUS Expression     {  
 										char string_v[100];
