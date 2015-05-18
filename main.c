@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int hair = 10;
+char hair = 'H';
 char sex = 'M';
 int test = 235;
 int age;
 float precision = 10.5f;
+char nome;
+float data;
 
 int main(){
     2+2;

@@ -122,7 +122,7 @@ void add_symbol_to_scopes(char* c_type,
 		switch( data_type)
 		{
 		case CHAR_T:
-			current = newChar(literal,(char)value[0],initialized);
+			current = newChar(literal,(char)value[1],initialized);
 			break;
 		case SHORT_T:
 			current = newShort(literal,(int)atoi(value),initialized);
@@ -172,22 +172,23 @@ void declare_bss(char* name, int data_type)
 		}
 }
 
-void
-close_bss()
+void close_bss()
 {
 	init_bss();
 	char variable[1000];
 	SymbolTable* current = findTable("__global",scopes); 
-	while(current != NULL)
+    while(current != NULL)
 	{
-		declare_bss(current->value->name,
-					current->value->data_type);
-		current = current->next;
+        if(current->value->initialized == 0){
+            declare_bss(current->value->name,
+                current->value->data_type);
+        }
+        current = current->next;
 	}
 }
 
 void declare_data(char* name, int data_type)
-{
+{   
 		char aux[20];
 		sprintf(aux,"\t%s",name);
 		strcat(data_section,aux);
@@ -198,7 +199,7 @@ void declare_data(char* name, int data_type)
 		case SHORT_T:
 			strcat(data_section," dw 1 \n");break;
 		case INT_T:
-			strcat(data_section," dw 1 \n");break;
+			strcat(data_section," dd 1 \n");break;
 		case LONG_T:
 			strcat(data_section, " dd 1 \n");break;
 		case FLOAT_T:
@@ -209,51 +210,53 @@ void declare_data(char* name, int data_type)
 			strcat(data_section," dw 1 \n");break;
 		}
 }
-void
-close_data()
+
+void close_data()
 {
 	init_data();
 	char variable[1000];
-	SymbolTable* current = findTable("__local",scopes); 
+	SymbolTable* current = findTable("__global",scopes); 
     while(current != NULL)
-	{
-        switch(current->value->data_type){
-            case CHAR_T:
-            {
-                char aux[50];
-            
-                sprintf(aux,"\t%s db '%c' \n", current->value->name, current->value->char_value);
-                strcat(data_section,aux);
-                
-                break;
+	{   
+        if(current->value->initialized == 1){
+            switch(current->value->data_type){
+                case CHAR_T:
+                {
+                    char aux[50];
+
+                    sprintf(aux,"\t%s db \'%c\' \n", current->value->name, current->value->char_value);
+                    strcat(data_section,aux);
+
+                    break;
+                }
+                case SHORT_T:
+                    declare_data(current->value->name,
+                                 current->value->data_type);
+                    break;
+                case INT_T:
+                    declare_data(current->value->name,
+                                 current->value->data_type);
+                    break;
+                case LONG_T:
+                    declare_data(current->value->name,
+                                 current->value->data_type);
+                    break;
+                case FLOAT_T:
+                    declare_data(current->value->name,
+                                 current->value->data_type);
+                    break;
+                case DOUBLE_T:
+                    declare_data(current->value->name,
+                                 current->value->data_type);
+                    break;
+                case PTR_T:
+                    declare_data(current->value->name,
+                                 current->value->data_type);
+                    break;
             }
-            case SHORT_T:
-                declare_data(current->value->name,
-					         current->value->data_type);
-                break;
-            case INT_T:
-                declare_data(current->value->name,
-					         current->value->data_type);
-                break;
-            case LONG_T:
-                declare_data(current->value->name,
-					         current->value->data_type);
-                break;
-            case FLOAT_T:
-                declare_data(current->value->name,
-					         current->value->data_type);
-                break;
-            case DOUBLE_T:
-                declare_data(current->value->name,
-					         current->value->data_type);
-                break;
-            case PTR_T:
-                declare_data(current->value->name,
-					         current->value->data_type);
-                break;
         }
-		current = current->next;
-	}
+        current = current->next;
+        }
 }
 
 void close_text()
@@ -261,10 +264,21 @@ void close_text()
 
 }
 
-void 
-declarate_data(char* name, int data_type, void* value)
+void declarate_data(char* name, int data_type, void* value)
 {
 	init_data();
 }
 
+void push_to_operand_stack(const char* string)
+{
+    char aux[50];
+    
+    strcpy(aux,"\tpush ");
+    
+    strcat(aux,string);
+    
+    strcat(aux,"\n");
+    
+    strcat(text_section,aux);
+}   
 

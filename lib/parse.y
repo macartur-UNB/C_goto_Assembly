@@ -45,8 +45,12 @@ Line:
 	 Declaration					 
 	;
 Declaration:
-	Global_declaration                        {close_bss();} 
-    | Function START_KEYS  Scope  END_KEYS    {close_data();}
+	Global_declaration                        
+        {
+            close_bss(); 
+            close_data();
+        } 
+    | Function START_KEYS  Scope  END_KEYS
 	;
 Scope:
 	/* empty */							
@@ -55,13 +59,16 @@ Scope:
 	| Scope Expression SEMICOLON;
 	;
 Function:
-	C_TYPE IDENTIFIER	START_PARENTHESES	END_PARENTHESES	 {printf("Function: %s", $2);}
+	C_TYPE IDENTIFIER	START_PARENTHESES	END_PARENTHESES	 
+        {
+            printf("Function: %s", $2);
+        }
 	;
 Global_declaration:
     /* Global Uninitialized Variable */
 	C_TYPE IDENTIFIER SEMICOLON
         {
-            add_symbol_to_scopes($1,$2,"1",1,"__global");
+            add_symbol_to_scopes($1,$2,"0",0,"__global");
             printf("Global Uninitialized Variable %s", $2);
         }
     
@@ -75,21 +82,23 @@ Global_declaration:
 Local_declaration:
 	/* Local Uninitialized Variable */
     C_TYPE IDENTIFIER SEMICOLON 
-        {
-            add_symbol_to_scopes($1,$2,"1",1,"__local");    
+        {    
             printf("\tLocal Variable %s",$2);
         }
     
     /* Local Initialized Variable */
     | C_TYPE IDENTIFIER RECEIVE LITERAL SEMICOLON
-        {
-            add_symbol_to_scopes($1,$2,$4,1,"__local");
+        {   
             printf("\tLocal Initialized Variable %s = %s", $2, $4);
         }
 	;
 
 Expression:
-    LITERAL {$$ = $1;}
+    LITERAL 
+        {
+            $$ = $1;
+            /* push_to_operand_stack($$); */
+        }
 	| START_PARENTHESES Expression END_PARENTHESES { $$ = $2 ;printf("( %s )",$2);   }
 	| Expression PLUS Expression     {  
 										char string_v[100];
