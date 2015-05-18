@@ -46,7 +46,7 @@ Line:
 	;
 Declaration:
 	Global_declaration                        {close_bss();} 
-    | Function START_KEYS  Scope  END_KEYS   
+    | Function START_KEYS  Scope  END_KEYS    {close_data();}
 	;
 Scope:
 	/* empty */							
@@ -68,6 +68,7 @@ Global_declaration:
     /* Global Initialized Variable */
     | C_TYPE IDENTIFIER RECEIVE LITERAL SEMICOLON
         {
+            add_symbol_to_scopes($1,$2,$4,1,"__global");
             printf("Global Initialized Variable %s = %s", $2, $4);
         }
 	;
@@ -82,6 +83,7 @@ Local_declaration:
     /* Local Initialized Variable */
     | C_TYPE IDENTIFIER RECEIVE LITERAL SEMICOLON
         {
+            add_symbol_to_scopes($1,$2,$4,1,"__local");
             printf("\tLocal Initialized Variable %s = %s", $2, $4);
         }
 	;

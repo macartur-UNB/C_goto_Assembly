@@ -148,8 +148,6 @@ void add_symbol_to_scopes(char* c_type,
 		addSymbolToScope(scope,current,scopes);
 }
 
-
-
 void declare_bss(char* name, int data_type)
 {
 		char aux[20];
@@ -188,11 +186,76 @@ close_bss()
 	}
 }
 
+void declare_data(char* name, int data_type)
+{
+		char aux[20];
+		sprintf(aux,"\t%s",name);
+		strcat(data_section,aux);
+		switch(data_type)
+		{
+		case CHAR_T: 
+			strcat(data_section," db 1 \n");break;
+		case SHORT_T:
+			strcat(data_section," dw 1 \n");break;
+		case INT_T:
+			strcat(data_section," dw 1 \n");break;
+		case LONG_T:
+			strcat(data_section, " dd 1 \n");break;
+		case FLOAT_T:
+			strcat(data_section, " dd 1 \n");break;
+		case DOUBLE_T:
+			strcat(data_section ," dd 1 \n" );break;
+		case PTR_T: 
+			strcat(data_section," dw 1 \n");break;
+		}
+}
 void
 close_data()
 {
-	
+	init_data();
+	char variable[1000];
+	SymbolTable* current = findTable("__local",scopes); 
+    while(current != NULL)
+	{
+        switch(current->value->data_type){
+            case CHAR_T:
+            {
+                char aux[50];
+            
+                sprintf(aux,"\t%s db '%c' \n", current->value->name, current->value->char_value);
+                strcat(data_section,aux);
+                
+                break;
+            }
+            case SHORT_T:
+                declare_data(current->value->name,
+					         current->value->data_type);
+                break;
+            case INT_T:
+                declare_data(current->value->name,
+					         current->value->data_type);
+                break;
+            case LONG_T:
+                declare_data(current->value->name,
+					         current->value->data_type);
+                break;
+            case FLOAT_T:
+                declare_data(current->value->name,
+					         current->value->data_type);
+                break;
+            case DOUBLE_T:
+                declare_data(current->value->name,
+					         current->value->data_type);
+                break;
+            case PTR_T:
+                declare_data(current->value->name,
+					         current->value->data_type);
+                break;
+        }
+		current = current->next;
+	}
 }
+
 void close_text()
 {
 
