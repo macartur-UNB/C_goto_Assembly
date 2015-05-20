@@ -36,6 +36,8 @@ void add_symbol_to_scopes(char* c_type,
 void declare_bss(char* name,int type);
 void declarate_data(char* name, int data_type, void* value);
 
+void init_stack(const int stack_size);
+void finalize_stack(const int stack_size);
 /*
  *	EXTRACT INFORMATION FROM STRING
  *

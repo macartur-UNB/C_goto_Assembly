@@ -52,14 +52,14 @@ void init_data()
 	strcpy(data_section,"section .data\n");
 }
 
-void init_text(char* global_section)
+void init_text()
 {
-	char global[25];
-	int text_size = 10000;
-	text_section = malloc(text_size*sizeof(char));
-	strcpy(text_section,"section .text\n");
-	sprintf(global,"\tglobal %s\n",global_section);
-	strcat(text_section,global);
+    int text_size = 10000;
+	text_section = malloc(text_size * sizeof(char));
+	
+    strcpy(text_section,"section .text\n");
+    
+    strcat(text_section, "\tglobal _start\n\n");
 }
 
 void init_asm()
@@ -267,6 +267,34 @@ void close_text()
 void declarate_data(char* name, int data_type, void* value)
 {
 	init_data();
+}
+
+void initialize_functions(const char* function_name)
+{
+    if((!strcmp(function_name,"main")) && (text_section == NULL))
+    {
+        init_text();
+        
+        strcat(text_section,"_start:\n");
+        
+        init_stack(30);
+    }
+}
+
+void init_stack(const int stack_size)
+{
+    char epilogue[100];
+    
+    sprintf(epilogue, "\tpush ebp\n\tmov ebp, esp\n\tsub esp, %d\n",stack_size);
+    
+    strcat(text_section, epilogue);
+}
+
+void finalize_stack(const int stack_size)
+{
+    /*
+        TODO: desalocar a pilha.
+    */
 }
 
 void push_to_operand_stack(const char* string)

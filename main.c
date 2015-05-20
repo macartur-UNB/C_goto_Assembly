@@ -10,8 +10,6 @@ char nome;
 float data;
 
 int main(){
-    2+2;
-    3+3;
     char letra = 's';
     int x;
     int y = 5;

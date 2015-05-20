@@ -35,16 +35,17 @@ integer             (-)?{digit}+
 double              {integer}("."{integer}){exponant}?
 float               {integer}("."{integer})?{exponant}?f
 
-literal             {char}|{string}|{integer}|{double}|{float}
-
-
 %%
 
 {white}                 {   /*    SPACE IGNORED   */                }
 {pre_processor}         {   /*  PRE_PROCESSOR IGNORED*/             }
 {line_comment}          {   /*    LINE COMMENT IGNORED*/            }
 {multi_line_comment}    {   /*    MULTILINE COMMENT IGNORED*/       }
-{literal}                { yylval =  strdup(yytext) ; return LITERAL;  }
+{char}                  { yylval =  strdup(yytext); return CHAR;    }
+{string}                { yylval =  strdup(yytext); return STRING;  }
+{integer}               { yylval =  strdup(yytext); return INTEGER; }
+{double}                { yylval =  strdup(yytext); return DOUBLE;  }
+{float}                 { yylval =  strdup(yytext); return FLOAT;   }
 "("                     { return   START_PARENTHESES;               }
 ")"                     { return   END_PARENTHESES;                 }
 "{"                     { return   START_KEYS;                      }

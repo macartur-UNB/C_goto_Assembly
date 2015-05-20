@@ -6,9 +6,13 @@
 #include <string.h>
 %}
 
-%token  IDENTIFIER
-%token  LITERAL
-
+%token IDENTIFIER
+%token CHAR
+%token STRING 
+%token INTEGER
+%token FLOAT
+%token DOUBLE
+    
 %token  C_TYPE
 
 %token PLUS
@@ -61,6 +65,7 @@ Scope:
 Function:
 	C_TYPE IDENTIFIER	START_PARENTHESES	END_PARENTHESES	 
         {
+            initialize_functions($2);
             printf("Function: %s", $2);
         }
 	;
@@ -94,11 +99,10 @@ Local_declaration:
 	;
 
 Expression:
-    LITERAL 
-        {
-            $$ = $1;
-            /* push_to_operand_stack($$); */
-        }
+    INTEGER  {$$ = $1; /*push_to_operand_stack($$);*/}
+    | FLOAT  {$$ = $1;}
+    | DOUBLE {$$ = $1;}
+    | CHAR   {$$ = $1;}
 	| START_PARENTHESES Expression END_PARENTHESES { $$ = $2 ;printf("( %s )",$2);   }
 	| Expression PLUS Expression     {  
 										char string_v[100];
