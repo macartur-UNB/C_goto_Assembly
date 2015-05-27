@@ -115,3 +115,10 @@ findSymbol(char* name,SymbolTable* symbol_table){
 	}
 	return NULL;
 }
+
+size_t
+get_position_stack(Symbol*symbol)
+{
+	// TODO: duplamente encadeada 
+	return 0;	
+}

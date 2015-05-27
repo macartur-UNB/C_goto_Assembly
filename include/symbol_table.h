@@ -20,4 +20,8 @@ Symbol* findSymbol  (char* name,SymbolTable* symbol_table);
 SymbolTable*
 createSymbolTable(char* scope, SymbolTable* head, SymbolTable* tail,Symbol* value,SymbolTable* next);
 
+
+size_t get_position_stack(Symbol* symbol);
+
+
 #endif

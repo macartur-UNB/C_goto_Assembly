@@ -1,6 +1,15 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "vector.h"
+#include "symbol_table.h"
+#include "symbol.h"
+#include "definitions.h"
+
+
 /*
  *
  *	INITIALIZES FUNCTIONS
@@ -36,8 +45,16 @@ void add_symbol_to_scopes(char* c_type,
 void declare_bss(char* name,int type);
 void declarate_data(char* name, int data_type, void* value);
 
+int validate_symbol_declaration(Symbol* symbol,char* scope,Vector* scopes);
+/*
+ *	OPERAND_STACK
+ *
+ *
+ * */
+
 void init_stack(const int stack_size);
 void finalize_stack(const int stack_size);
+
 /*
  *	EXTRACT INFORMATION FROM STRING
  *

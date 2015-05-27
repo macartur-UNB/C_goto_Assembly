@@ -1,9 +1,12 @@
+
 %{
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "global.h"
+
 #include <string.h>
+
 %}
 
 %token IDENTIFIER
@@ -40,6 +43,7 @@
 
 %start Start
 
+
 %%
 
 Start:
@@ -59,14 +63,14 @@ Declaration:
 Scope:
 	/* empty */							
 	| Scope Local_declaration 			 
-	| Scope RETURN LITERAL SEMICOLON   
+	| Scope RETURN Literal SEMICOLON   
 	| Scope Expression SEMICOLON;
 	;
 Function:
 	C_TYPE IDENTIFIER	START_PARENTHESES	END_PARENTHESES	 
         {
             initialize_functions($2);
-            printf("Function: %s", $2);
+            printf("Function: %s\n", $2);
         }
 	;
 Global_declaration:
@@ -74,29 +78,37 @@ Global_declaration:
 	C_TYPE IDENTIFIER SEMICOLON
         {
             add_symbol_to_scopes($1,$2,"0",0,"__global");
-            printf("Global Uninitialized Variable %s", $2);
+            printf("Global Uninitialized Variable %s\n", $2);
         }
     
     /* Global Initialized Variable */
-    | C_TYPE IDENTIFIER RECEIVE LITERAL SEMICOLON
+    | C_TYPE IDENTIFIER RECEIVE Literal SEMICOLON
         {
             add_symbol_to_scopes($1,$2,$4,1,"__global");
-            printf("Global Initialized Variable %s = %s", $2, $4);
+            printf("Global Initialized Variable %s = %s\n", $2, $4);
         }
 	;
 Local_declaration:
 	/* Local Uninitialized Variable */
     C_TYPE IDENTIFIER SEMICOLON 
         {    
-            printf("\tLocal Variable %s",$2);
+            printf("\tLocal Variable %s\n",$2);
         }
     
     /* Local Initialized Variable */
-    | C_TYPE IDENTIFIER RECEIVE LITERAL SEMICOLON
+    | C_TYPE IDENTIFIER RECEIVE Literal SEMICOLON
         {   
-            printf("\tLocal Initialized Variable %s = %s", $2, $4);
+            printf("\tLocal Initialized Variable %s = %s\n", $2, $4);
         }
 	;
+
+Literal:
+    INTEGER { $$=$1;}
+    | FLOAT { $$=$1;}
+    | DOUBLE { $$=$1;}
+    | CHAR { $$=$1;}
+    | STRING { $$=$1;}
+    ;
 
 Expression:
     INTEGER  {$$ = $1; /*push_to_operand_stack($$);*/}
@@ -136,19 +148,19 @@ Expression:
 										printf("%s mod %s\n",$1,$3); 
 										}
 	;
-    
 
 %%
 
 /* YACC ERROR*/
 void yyerror(const char *s){
-	fprintf(stderr, "error: %s\n", s);
+	fprintf(stderr, "Error - %s - %d\n", s,yylineno);
 }
 
 
 /* YACC MAIN*/
 int main(void)
 {
+    yylineno = 1;
     init_asm();
     yyin = fopen("main.c","r");
     yyparse();

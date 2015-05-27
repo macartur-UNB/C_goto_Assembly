@@ -1,12 +1,4 @@
 #include "util.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "vector.h"
-#include "symbol_table.h"
-#include "symbol.h"
-#include "definitions.h"
-
 // out put file
 FILE * assembly_file;
 
@@ -115,6 +107,7 @@ void add_symbol_to_scopes(char* c_type,
 						  int initialized,
 						  char* scope)
 {
+		int result = 0;
 		int data_type = get_data_type_id(c_type);
 		char* literal = extract_data_type(string);
 		Symbol* current;
@@ -145,6 +138,15 @@ void add_symbol_to_scopes(char* c_type,
 			 *		*/
 			break;
 		}	
+
+
+		result = validate_symbol_declaration(current,scope,scopes);
+		if (!result)
+		{
+			char error[100];
+			sprintf(error,"Variable %s already declared.",current->name);
+			yyerror(error);
+		}
 		addSymbolToScope(scope,current,scopes);
 }
 
@@ -310,3 +312,19 @@ void push_to_operand_stack(const char* string)
     strcat(text_section,aux);
 }   
 
+int 
+validate_symbol_declaration(Symbol* symbol,char* scope,Vector* scopes)
+{
+	SymbolTable* current = findTable(scope,scopes); 
+    while(current != NULL)
+	{
+		Symbol* s = current->value;
+		if( s != NULL)
+		{
+			if ( ! strcmp(s->name,symbol->name)  )
+				return 0;
+		}
+        current = current->next;
+	}
+	return 1;
+}

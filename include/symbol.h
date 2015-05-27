@@ -31,6 +31,8 @@ Symbol* newFloat	(char* name, float float_value,int initialized);
 Symbol* newDouble	(char* name, double double_value,int initialized);
 Symbol* newPoiter	(char* name, unsigned int ptr_level, Data_type ptr_type,void* ptr_value,int initialized);
 
+size_t symbol_size(Symbol* symbol);
+
 Symbol* createSymbol();
 void freeSymbol(Symbol* symbol);
 #endif

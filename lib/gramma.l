@@ -1,22 +1,13 @@
+%option yylineno
+
 %{
 #include <stdlib.h>
 
 #include "global.h"
 #include "parse.h"
-
-
-
-/*
-   
-   TODO: falta tratar identifier com letra+numero+letra
-         falta tratar sizeof em Expression
-*/
-
-
-
-
 %}
 
+newline 			\n
 white               [ \t]+
 digit               [0-9]
 exponant            [eE][+-]?{integer}
@@ -36,7 +27,7 @@ double              {integer}("."{integer}){exponant}?
 float               {integer}("."{integer})?{exponant}?f
 
 %%
-
+{newline}				{   /*   INCREMENT A NEW LINE IN YYLINENO*/ }
 {white}                 {   /*    SPACE IGNORED   */                }
 {pre_processor}         {   /*  PRE_PROCESSOR IGNORED*/             }
 {line_comment}          {   /*    LINE COMMENT IGNORED*/            }
