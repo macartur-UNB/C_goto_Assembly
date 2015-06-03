@@ -53,8 +53,9 @@ int validate_symbol_declaration(Symbol* symbol,char* scope,Vector* scopes);
  * */
 
 void init_stack(const int stack_size);
-void finalize_stack(const int stack_size);
-
+void finalize_stack();
+void push_to_stack(Data_type type);
+void read_variable(Data_type type,int offset);
 /*
  *	EXTRACT INFORMATION FROM STRING
  *

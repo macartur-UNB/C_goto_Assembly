@@ -111,7 +111,8 @@ Literal:
     ;
 
 Expression:
-    INTEGER  {$$ = $1; /*push_to_operand_stack($$);*/}
+	IDENTIFIER {$$=$1;}
+    | INTEGER  {$$ = $1;}
     | FLOAT  {$$ = $1;}
     | DOUBLE {$$ = $1;}
     | CHAR   {$$ = $1;}

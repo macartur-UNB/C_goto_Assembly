@@ -40,27 +40,27 @@ float               {integer}("."{integer})?{exponant}?f
 "("                     { return   START_PARENTHESES;               }
 ")"                     { return   END_PARENTHESES;                 }
 "{"                     { return   START_KEYS;                      }
-"}"                     {  return  END_KEYS  ;                      }
-"["                     {   return START_BRAKETS;                   }
-"]"                     {  return  END_BRAKETS;                     }
-";"                     {   return SEMICOLON;                       }
-","                     {   return COMMA;                           }
-"+"                     {       return PLUS;                        }
-"-"                     {       return MINUS;                       }
-"*"                     {       return TIMES;                       }
-"/"                     {       return DIV;                         }
-"%"                     {       return MOD;                         }
-">"						{	return BIGGER_THAN;						}
-"<"						{	return LESS_THAN;						}
-">="					{	return BIGGER_OR_EQUAL;					}
-"<="					{	return LESS_OR_EQUAL;					}
-"=="					{	return EQUAL;							}
-"!="					{   return DIFFERENT;						}
-"!"						{	return NOT;								}
+"}"                     { return  END_KEYS  ;                       }
+"["                     { return START_BRAKETS;                     }
+"]"                     { return  END_BRAKETS;                      }
+";"                     { return SEMICOLON;                         }
+","                     { return COMMA;                             }
+"+"                     { return PLUS;                              }
+"-"                     { return MINUS;                             }
+"*"                     { return TIMES;                             }
+"/"                     { return DIV;                               }
+"%"                     { return MOD;                               }
+">"						{ return BIGGER_THAN;						}
+"<"						{ return LESS_THAN;				    		}
+">="					{ return BIGGER_OR_EQUAL;					}
+"<="					{ return LESS_OR_EQUAL;				    	}
+"=="					{ return EQUAL;						    	}
+"!="					{ return DIFFERENT;				    		}
+"!"						{ return NOT;								}
 "="                     { return RECEIVE;                           }
-{ctype}                 { yylval= strdup(yytext) ; return C_TYPE;    }
+{ctype}                 { yylval= strdup(yytext) ; return C_TYPE;   }
 return                  {      return RETURN;                       }
-{identifier}            { yylval = strdup(yytext); return IDENTIFIER;    }
+{identifier}            {yylval = strdup(yytext); return IDENTIFIER;}
 
 %%
 

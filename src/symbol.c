@@ -106,3 +106,26 @@ freeSymbol(Symbol* symbol)
 	free(symbol);
 	symbol = NULL;	
 }
+
+size_t symbol_size(Symbol* symbol)
+{
+	
+	switch(symbol->data_type)
+	{
+		case CHAR_T:
+		case SHORT_T:
+		case INT_T:
+		case FLOAT_T:
+			return 2;
+
+		case LONG_T:
+		case DOUBLE_T:
+		case PTR_T:
+			return 4;
+		break;
+	}
+	return 0;
+}
+
+
+

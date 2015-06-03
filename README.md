@@ -20,3 +20,9 @@ $ make
 ```sh
     $ make run
 ```
+
+### COMPLE ASSEMBLY
+```sh
+    $ nasm -f <program>.asm
+    $ ld -m elf_386 -o <program> <program>.o
+```

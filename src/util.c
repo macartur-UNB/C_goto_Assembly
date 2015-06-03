@@ -292,25 +292,58 @@ void init_stack(const int stack_size)
     strcat(text_section, epilogue);
 }
 
-void finalize_stack(const int stack_size)
+void finalize_stack()
 {
-    /*
-        TODO: desalocar a pilha.
-    */
+	char prologo[100];
+	sprintf(prologo,"\tmov esp, ebp\n\tpop ebp");;
+	strcat(text_section,prologo);
 }
 
-void push_to_operand_stack(const char* string)
+/*      valor  type         */
+void push_to_stack(Data_type type)
 {
-    char aux[50];
-    
-    strcpy(aux,"\tpush ");
-    
-    strcat(aux,string);
-    
-    strcat(aux,"\n");
-    
-    strcat(text_section,aux);
+	switch(type)
+	{
+		case CHAR_T:
+		case SHORT_T:
+			strcat(text_section,"\tpush word al\n");
+		case INT_T:
+		case FLOAT_T:
+			strcat(text_section,"\tpush word ax\n");
+			break;
+		case DOUBLE_T:
+		case LONG_T:
+		case PTR_T:
+			strcat(text_section,"\tpush eax\n");
+			break;
+	}
 }   
+
+/*   type posicao  */
+void read_variable(Data_type type,int offset)
+{
+	char aux[100];
+	switch(type)
+	{
+		case CHAR_T:
+		case SHORT_T:
+			sprintf(aux,"\tmov al, BYTE [esp + %d]\n",offset);
+			break;
+		case INT_T:
+		case FLOAT_T:
+			sprintf(aux,"\tmov ax, WORD [esp + %d]\n",offset);
+			break;
+		case DOUBLE_T:
+		case LONG_T:
+		case PTR_T:
+			sprintf(aux,"\tmov eax, [esp + %d]\n",offset);
+			break;
+	}
+	strcat(text_section,aux);
+}
+
+
+
 
 int 
 validate_symbol_declaration(Symbol* symbol,char* scope,Vector* scopes)
