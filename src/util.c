@@ -1,4 +1,5 @@
 #include "util.h"
+
 // out put file
 FILE * assembly_file;
 
@@ -6,21 +7,29 @@ FILE * assembly_file;
 char* bss_section;
 char* data_section;
 char* text_section;
+char* current_function; 
 
 /*
  *	VECTOR TO ALL SCOPES
  * */
 Vector* scopes;
 
-
-void open_asm()
+/*
+ *	Write a new asm file
+ * */
+void open_asm(char* file_name)
 {
-	assembly_file = fopen("main.asm","w+");
+	char aux[100];
+	sprintf(aux,"%s.asm",aux);
+	assembly_file = fopen(aux,"w+");
 }
 
+/*
+ *	Used to close a file *.asm
+ *	writting all sections initialized
+ * */
 void close_asm()
 {
-	open_asm();
 	if ( bss_section != NULL )
 		fprintf(assembly_file,"%s",bss_section);
     if (data_section != NULL)
@@ -54,13 +63,19 @@ void init_text()
     strcat(text_section, "\tglobal _start\n\n");
 }
 
-void init_asm()
+/*
+ *	Initialize a asm context
+ * */
+void init_asm(char* file_name)
 {
 	scopes = newVector();
-	addSymbolTable(newSymbolTable("__global"),scopes);
+	addSymbolTable(newSymbolTable("global"),scopes);
+	open_asm(file_name);
 }
 
-
+/*
+ *  Analise a string data_type and return a type
+ * */
 char* extract_data_type(char* data_type)
 {
     char* result;
@@ -150,6 +165,9 @@ void add_symbol_to_scopes(char* c_type,
 		addSymbolToScope(scope,current,scopes);
 }
 
+/*	
+ *	Append to bss a new constant
+ * */
 void declare_bss(char* name, int data_type)
 {
 		char aux[20];
@@ -174,11 +192,14 @@ void declare_bss(char* name, int data_type)
 		}
 }
 
+/*
+ *	Close bss section with all declarations
+ * */
 void close_bss()
 {
 	init_bss();
 	char variable[1000];
-	SymbolTable* current = findTable("__global",scopes); 
+	SymbolTable* current = findTable("global",scopes); 
     while(current != NULL)
 	{
         if(current->value->initialized == 0){
@@ -189,6 +210,9 @@ void close_bss()
 	}
 }
 
+/*
+ * Declare a data in data section
+ * */
 void declare_data(char* name, int data_type)
 {   
 		char aux[20];
@@ -213,11 +237,14 @@ void declare_data(char* name, int data_type)
 		}
 }
 
+/*
+ * Close all data with all data declaration
+ * */
 void close_data()
 {
 	init_data();
 	char variable[1000];
-	SymbolTable* current = findTable("__global",scopes); 
+	SymbolTable* current = findTable("global",scopes); 
     while(current != NULL)
 	{   
         if(current->value->initialized == 1){
@@ -225,10 +252,8 @@ void close_data()
                 case CHAR_T:
                 {
                     char aux[50];
-
                     sprintf(aux,"\t%s db \'%c\' \n", current->value->name, current->value->char_value);
                     strcat(data_section,aux);
-
                     break;
                 }
                 case SHORT_T:
@@ -261,37 +286,59 @@ void close_data()
         }
 }
 
+/*
+ *	Close a text section
+ * */
 void close_text()
 {
-
+	finalize_stack();
 }
 
-void declarate_data(char* name, int data_type, void* value)
+/*
+ * End a current function
+ * */
+void 
+end_function()
 {
-	init_data();
+   current_function = "global";
 }
 
-void initialize_functions(const char* function_name)
+/*
+ *	Initialize e define a current function
+ * */
+void 
+initialize_functions(char* function_name)
 {
-    if((!strcmp(function_name,"main")) && (text_section == NULL))
+	if (text_section == NULL) init_text();
+
+    if((!strcmp(function_name,"main")))
     {
-        init_text();
-        
         strcat(text_section,"_start:\n");
-        
-        init_stack(30);
     }
+	else
+	{
+		char aux[100];
+		sprintf(aux,"%s:\n",function_name);
+		strcat(text_section,aux);
+	}
+	current_function = function_name;
 }
 
+/*
+ *	Building a stack with size as parameter
+ * */
 void init_stack(const int stack_size)
 {
     char epilogue[100];
     
-    sprintf(epilogue, "\tpush ebp\n\tmov ebp, esp\n\tsub esp, %d\n",stack_size);
+    sprintf(epilogue,"\tpush ebp\n\tmov ebp, esp\n\tsub esp, %d\n",stack_size);
     
     strcat(text_section, epilogue);
 }
 
+/*
+ * Emptying stack in asm
+ * */
 void finalize_stack()
 {
 	char prologo[100];
@@ -299,8 +346,11 @@ void finalize_stack()
 	strcat(text_section,prologo);
 }
 
-/*      valor  type         */
-void push_to_stack(Data_type type)
+/*
+ *	Insert a data into a stack using asm 
+ * */
+void 
+push_to_stack(Data_type type)
 {
 	switch(type)
 	{
@@ -319,8 +369,11 @@ void push_to_stack(Data_type type)
 	}
 }   
 
-/*   type posicao  */
-void read_variable(Data_type type,int offset)
+/*
+ *	Function used to read a variable in asm from stack
+ * */
+void 
+read_variable(Data_type type,int offset)
 {
 	char aux[100];
 	switch(type)
@@ -343,8 +396,10 @@ void read_variable(Data_type type,int offset)
 }
 
 
-
-
+/*
+ * Return false if a IDENTIFIER was found in a scope 
+ *
+ * */
 int 
 validate_symbol_declaration(Symbol* symbol,char* scope,Vector* scopes)
 {
@@ -353,10 +408,8 @@ validate_symbol_declaration(Symbol* symbol,char* scope,Vector* scopes)
 	{
 		Symbol* s = current->value;
 		if( s != NULL)
-		{
-			if ( ! strcmp(s->name,symbol->name)  )
+			if ( ! strcmp(s->name,symbol->name)) 
 				return 0;
-		}
         current = current->next;
 	}
 	return 1;

@@ -53,12 +53,8 @@ Line:
 	 Declaration					 
 	;
 Declaration:
-	Global_declaration                        
-        {
-            close_bss(); 
-            close_data();
-        } 
-    | Function START_KEYS  Scope  END_KEYS
+	Global_declaration  							{	close_bss(); close_data(); } 
+    | Function START_KEYS  Scope  END_KEYS			{	end_function();	           }
 	;
 Scope:
 	/* empty */							
@@ -77,14 +73,14 @@ Global_declaration:
     /* Global Uninitialized Variable */
 	C_TYPE IDENTIFIER SEMICOLON
         {
-            add_symbol_to_scopes($1,$2,"0",0,"__global");
+            add_symbol_to_scopes($1,$2,"0",0,"global");
             printf("Global Uninitialized Variable %s\n", $2);
         }
     
     /* Global Initialized Variable */
     | C_TYPE IDENTIFIER RECEIVE Literal SEMICOLON
         {
-            add_symbol_to_scopes($1,$2,$4,1,"__global");
+            add_symbol_to_scopes($1,$2,$4,1,"global");
             printf("Global Initialized Variable %s = %s\n", $2, $4);
         }
 	;
@@ -161,8 +157,13 @@ void yyerror(const char *s){
 /* YACC MAIN*/
 int main(void)
 {
-    yylineno = 1;
-    init_asm();
-    yyin = fopen("main.c","r");
+	char file_name[50] = "main";
+	char file_in[50];
+	sprintf(file_in,"%s.c",file_name);
+
+    init_asm(file_name);
+    yyin = fopen(file_in,"r");
+
+    yylineno = 1; // count of files
     yyparse();
 }
