@@ -19,57 +19,22 @@ freeSymbolTable(SymbolTable * symbol_table)
 SymbolTable* 
 newSymbolTable( char* scope )
 {
-	return createSymbolTable(scope,NULL,NULL,NULL,NULL);
+	return createSymbolTable(scope,NULL,NULL,NULL,NULL,NULL);
 }
 
 
 SymbolTable* 
 createSymbolTable(char* scope, SymbolTable* head, SymbolTable* tail,
-									 Symbol* value,SymbolTable* next  )
+									 Symbol* value,SymbolTable* prev,SymbolTable* next  )
 {
 	SymbolTable* result = (SymbolTable*) malloc(sizeof(SymbolTable)); 
-	if( scope == NULL ){
-		result->scope = NULL;
-	}
-	else
-	{
-		result->scope =  scope;
-	}
-	
-	if ( head == NULL )
-	{
-		result->head = NULL;
-	}
-	else
-	{
-		result->head =  head;
-	}
-	
-	if (tail == NULL )
-	{
-		result->tail = NULL;
-	}
-	else
-	{
-		result->tail =  tail;
-	}
-	
-	if (value == NULL){
-		result->value = NULL;
-	}
-	else
-	{
-		result->value =  value;
-	}
-	
-	if (next == NULL) 
-	{
-		result->next = NULL;
-	}
-	else
-	{
-		result->next =  next;
-	}	
+
+	result->scope = scope;
+	result->head =  head;
+	result->tail =  tail;
+	result->value = value;
+	result->next =  next;
+	result->prev =  prev;
 
 	return result; 
 }
@@ -86,6 +51,8 @@ addSymbol(Symbol * symbol,SymbolTable* symbol_table)
 		symbol_table->head = symbol_table;
 		symbol_table->tail = symbol_table;
 		symbol_table->value = symbol;
+		symbol_table->prev = NULL;
+		symbol_table->next = NULL;
 		return;
 	}
 
@@ -93,8 +60,9 @@ addSymbol(Symbol * symbol,SymbolTable* symbol_table)
 										  symbol_table->head,
                                           symbol_table->tail,
                                           symbol,
+										  NULL,
 										  NULL);
-
+	next->prev = symbol_table->tail;
 	symbol_table->tail->next = next;
 	symbol_table->tail = next;
 }
@@ -121,4 +89,38 @@ get_position_stack(Symbol*symbol)
 {
 	// TODO: duplamente encadeada 
 	return 0;	
+}
+
+/*
+ *	Print symbol table from left to right
+ * */
+void 
+print_table_LR(SymbolTable* symbol_table)
+{
+	SymbolTable* current = symbol_table;
+	printf("Symbol[");
+	while( current->next != NULL)
+	{
+		Symbol* s = current->value;
+		printf(" %s ",s->name);
+		current = current->next;
+	}
+	printf("]\n");
+}
+
+/*
+ *	Print symbol table from right to left
+ * */
+void 
+print_table_RL(SymbolTable* symbol_table)
+{
+	SymbolTable* current = symbol_table->tail;
+	printf("Symbol[");
+	while( current->prev != NULL)
+	{
+		Symbol* s = current->value;
+		printf(" %s ",s->name);
+		current = current->prev;
+	}
+	printf("]\n");
 }

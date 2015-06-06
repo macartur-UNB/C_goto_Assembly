@@ -107,6 +107,9 @@ freeSymbol(Symbol* symbol)
 	symbol = NULL;	
 }
 
+/*
+ *	Return a size used to stack 
+ * */
 size_t symbol_size(Symbol* symbol)
 {
 	

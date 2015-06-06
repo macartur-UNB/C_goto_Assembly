@@ -160,7 +160,6 @@ int main(void)
     char file_name[50] = "main";
     char file_in[50];
     sprintf(file_in,"%s.c",file_name);
-
     init_asm(file_name);
     yyin = fopen(file_in,"r");
     yylineno = 1; // count of files

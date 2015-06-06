@@ -92,6 +92,9 @@ char* extract_data_type(char* data_type)
 	return result;
 }
 
+/*
+ *  Get ptr_level from a string data_type
+ * */
 int get_ptr_level(char* data_type)
 {
 	int count,i;
@@ -100,7 +103,11 @@ int get_ptr_level(char* data_type)
 	return count;
 }
 
-int get_data_type_id(char* data_type)
+/*
+ *  Return a data_type from data_type string
+ * */
+int 
+get_data_type_id(char* data_type)
 {
 	char* type = extract_data_type(data_type);
 	int i;
@@ -162,7 +169,10 @@ void add_symbol_to_scopes(char* c_type,
 			sprintf(error,"Variable %s already declared.",current->name);
 			yyerror(error);
 		}
-		addSymbolToScope(scope,current,scopes);
+        else
+        {
+		    addSymbolToScope(scope,current,scopes);
+        }
 }
 
 /*	
@@ -245,6 +255,7 @@ void close_data()
 	init_data();
 	char variable[1000];
 	SymbolTable* current = findTable("global",scopes); 
+
     while(current != NULL)
 	{   
         if(current->value->initialized == 1){
@@ -287,7 +298,7 @@ void close_data()
 }
 
 /*
- *	Close a text section
+ * Close a text section
  * */
 void close_text()
 {
@@ -370,7 +381,7 @@ push_to_stack(Data_type type)
 }   
 
 /*
- *	Function used to read a variable in asm from stack
+ * Function used to read a variable in asm from stack
  * */
 void 
 read_variable(Data_type type,int offset)
@@ -398,7 +409,6 @@ read_variable(Data_type type,int offset)
 
 /*
  * Return false if a IDENTIFIER was found in a scope 
- *
  * */
 int 
 validate_symbol_declaration(Symbol* symbol,char* scope,Vector* scopes)
