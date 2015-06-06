@@ -20,7 +20,7 @@ Vector* scopes;
 void open_asm(char* file_name)
 {
 	char aux[100];
-	sprintf(aux,"%s.asm",aux);
+	sprintf(aux,"%s.asm",file_name);
 	assembly_file = fopen(aux,"w+");
 }
 
