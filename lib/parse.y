@@ -65,7 +65,7 @@ Scope:
 Function:
 	C_TYPE IDENTIFIER	START_PARENTHESES	END_PARENTHESES	 
         {
-            initialize_functions($2);
+            initialize_functions($2,$1);
             printf("Function: %s\n", $2);
         }
 	;

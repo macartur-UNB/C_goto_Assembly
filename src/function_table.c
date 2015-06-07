@@ -3,29 +3,34 @@
 #include <stdio.h>
 
 Function_table* 
-newFunction_table()
+newFunctionTable(Function* value,Function_table* tail,Function_table* next)
 {
 	Function_table* t = (Function_table*) 
 						 malloc(sizeof(Function_table));
-    t->value = NULL;
-	t->tail = NULL;
-	t->next = NULL;
+    t->value = value;
+	t->tail = tail;
+	t->next = next;
+	return t;
 }
 
-Function_table* 
-addFunction(Function* function,Function_table* function_table)
+void 
+addFunctionTable(Function* function,
+				 Function_table* function_table)
 {
-	if (function_table->value == NULL)
+	Function* f = function_table->value;
+
+	if (f == NULL)
 	{
 		function_table->value = function;
 		function_table->tail = function_table;
 	}
-	Function_table* next = newFunction_table();
-	next->value = function;
-	function_table->tail->next=next;
-	function_table->tail = next;
-
-	return function_table;
+	else
+	{
+		Function_table* next = newFunctionTable(function,
+								     function_table->tail,NULL);
+		function_table->tail->next=next;
+		function_table->tail = next;
+	}
 }
 
 void 
@@ -44,10 +49,11 @@ void
 print_functions(Function_table* function_table)
 {
 	Function_table* current = function_table;
+
 	while( current->next != NULL)
 	{
 		Function* f = current->value;
-		printf("Function(%s)", f->name);
+		printf("Function[%s]\n", f->name);
 		current = current->next;
 	}
 }

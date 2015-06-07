@@ -8,8 +8,8 @@ typedef struct _Function_table {
 	struct _Function_table* next;
 }Function_table;
 
-Function_table* newFunction_table();
-Function_table* addFunction(Function* function,Function_table* function_table);
+Function_table* newFunctionTable(Function* value,Function_table* tailf,Function_table* next);
+void addFunctionTable(Function* function,Function_table* function_table);
 Function* find_function(char* function_name,Function_table* function_table);
 void free_function_table(Function_table* function_table);
 void print_functions(Function_table* function_table);

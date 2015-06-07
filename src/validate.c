@@ -3,14 +3,16 @@
 /*
  *	Verify if the function was declared
  *
+ * False = not found
+ * True = found
  * */
 int 
 function_was_declared(char* function_name,
 					  Function_table* functions)
 {
-	if(find_function(function_name,functions) == NULL)
-		return 0;
-	return 1;
+	if(find_function(function_name,functions) != NULL)
+		return 1;
+	return 0;
 }
 
 

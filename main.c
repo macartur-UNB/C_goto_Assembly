@@ -21,10 +21,8 @@ int main(){
     return 0;
 }
 
-float test(){
-   int letra; 
-   int x =3;
-   short test;
+int main(){
+}
 
-   return 0;
+int main(){
 }

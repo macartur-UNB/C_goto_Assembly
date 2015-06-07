@@ -13,6 +13,7 @@ char* current_function;
  *	VECTOR TO ALL SCOPES
  * */
 Vector* scopes;
+Function_table* functions;
 
 /*
  *	Write a new asm file
@@ -76,6 +77,7 @@ init_asm(char* file_name)
 {
 	current_function = "global";
 	scopes = newVector();
+	functions = newFunctionTable(NULL,NULL,NULL);
 	addSymbolTable(newSymbolTable(current_function),scopes);
 	open_asm(file_name);
 }
@@ -322,7 +324,7 @@ void close_data()
             }
         }
         current = current->next;
-        }
+    }
 }
 
 /*
@@ -339,8 +341,12 @@ void close_text()
  *
  * */
 void 
-initialize_functions(char* function_name)
+initialize_functions(char* function_name,char* return_of_function)
 {
+	Function* newFunction=NULL;
+	int result=0;
+	char error[128];
+
 	if (text_section == NULL) init_text();
 
     if((!strcmp(function_name,"main")))
@@ -353,14 +359,31 @@ initialize_functions(char* function_name)
 		sprintf(aux,"%s:\n",function_name);
 		strcat(text_section,aux);
 	}
-	current_function = function_name;
 
-
-/*
- *	TODO:USE VALIDATE FUNCTION HERE
- * */	
-	addSymbolTable(newSymbolTable(current_function),scopes);
-
+	/*
+ *
+ *		TODO:NEEDS FIX HERE THERE ARE A PROBLEM HERE
+ *
+ * */
+	printf("-----------------\n");
+	print_functions(functions);
+	printf("-----------------\n");
+	result = function_was_declared(function_name,functions);
+	printf("-----[%d]-----\n",result);
+	
+	if(!result)
+	{
+	 newFunction = new_function(get_data_type_id(return_of_function),
+								function_name);
+	 addSymbolTable(newSymbolTable(function_name),scopes);
+	 addFunctionTable(newFunction,functions);
+	 current_function = function_name;
+	}
+	else{
+	printf("***********************************\n");
+     sprintf(error,"The Function %s is already declared.",function_name);
+	 yyerror(error);
+	}
 }
 
 /*
