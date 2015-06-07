@@ -28,7 +28,8 @@ void open_asm(char* file_name)
  *	Used to close a file *.asm
  *	writting all sections initialized
  * */
-void close_asm()
+void 
+close_asm()
 {
 	if ( bss_section != NULL )
 		fprintf(assembly_file,"%s",bss_section);
@@ -41,19 +42,22 @@ void close_asm()
 	fclose(assembly_file);
 }
 
-void init_bss()
+void 
+init_bss()
 {
 	bss_section = malloc(1024*sizeof(char));
 	strcpy(bss_section,"section .bss\n");
 }
 
-void init_data()
+void 
+init_data()
 {
 	data_section = malloc(1024*sizeof(char));
 	strcpy(data_section,"section .data\n");
 }
 
-void init_text()
+void 
+init_text()
 {
     int text_size = 10000;
 	text_section = malloc(text_size * sizeof(char));
@@ -65,16 +69,20 @@ void init_text()
 
 /*
  *	Initialize a asm context
+ *
  * */
-void init_asm(char* file_name)
+void 
+init_asm(char* file_name)
 {
+	current_function = "global";
 	scopes = newVector();
-	addSymbolTable(newSymbolTable("global"),scopes);
+	addSymbolTable(newSymbolTable(current_function),scopes);
 	open_asm(file_name);
 }
 
 /*
  *  Analise a string data_type and return a type
+ *
  * */
 char* extract_data_type(char* data_type)
 {
@@ -94,6 +102,7 @@ char* extract_data_type(char* data_type)
 
 /*
  *  Get ptr_level from a string data_type
+ *
  * */
 int get_ptr_level(char* data_type)
 {
@@ -105,6 +114,7 @@ int get_ptr_level(char* data_type)
 
 /*
  *  Return a data_type from data_type string
+ *
  * */
 int 
 get_data_type_id(char* data_type)
@@ -123,12 +133,18 @@ get_data_type_id(char* data_type)
 	return -1;
 }
 
-void add_symbol_to_scopes(char* c_type,
-						  char* string,
-						  char* value,
-						  int initialized,
-						  char* scope)
+/*
+ *
+ *  Add symbol to some scope	
+ *
+ * */
+void 
+add_symbol_to_scopes(char* c_type,
+					 char* string,
+					 char* value,
+					 int initialized)
 {
+		char error[128];
 		int result = 0;
 		int data_type = get_data_type_id(c_type);
 		char* literal = extract_data_type(string);
@@ -161,22 +177,29 @@ void add_symbol_to_scopes(char* c_type,
 			break;
 		}	
 
-
-		result = validate_symbol_declaration(current,scope,scopes);
-		if (!result)
-		{
-			char error[100];
-			sprintf(error,"Variable %s already declared.",current->name);
-			yyerror(error);
+		if (!strcmp(current_function,"global")){
+			result = validate_global_declaration(current,scopes);
+			if (!result)
+			{
+				sprintf(error,"Global variable %s already declared.",current->name);
+			}
+		}else{
+			result = validate_local_declaration(current,current_function,scopes);
+			if (!result)
+			{
+				sprintf(error,"Local variable %s already declared.",current->name);
+			}
 		}
-        else
-        {
-		    addSymbolToScope(scope,current,scopes);
-        }
+		
+		if (result)
+			addSymbolToScope(current_function,current,scopes);
+		else
+			yyerror(error);
 }
 
 /*	
  *	Append to bss a new constant
+ *
  * */
 void declare_bss(char* name, int data_type)
 {
@@ -204,6 +227,7 @@ void declare_bss(char* name, int data_type)
 
 /*
  *	Close bss section with all declarations
+ *
  * */
 void close_bss()
 {
@@ -222,6 +246,7 @@ void close_bss()
 
 /*
  * Declare a data in data section
+ *
  * */
 void declare_data(char* name, int data_type)
 {   
@@ -249,6 +274,7 @@ void declare_data(char* name, int data_type)
 
 /*
  * Close all data with all data declaration
+ *
  * */
 void close_data()
 {
@@ -263,7 +289,9 @@ void close_data()
                 case CHAR_T:
                 {
                     char aux[50];
-                    sprintf(aux,"\t%s db \'%c\' \n", current->value->name, current->value->char_value);
+                    sprintf(aux,"\t%s db \'%c\' \n", 
+							current->value->name,
+							current->value->char_value);
                     strcat(data_section,aux);
                     break;
                 }
@@ -299,6 +327,7 @@ void close_data()
 
 /*
  * Close a text section
+ *
  * */
 void close_text()
 {
@@ -306,16 +335,8 @@ void close_text()
 }
 
 /*
- * End a current function
- * */
-void 
-end_function()
-{
-   current_function = "global";
-}
-
-/*
  *	Initialize e define a current function
+ *
  * */
 void 
 initialize_functions(char* function_name)
@@ -333,10 +354,28 @@ initialize_functions(char* function_name)
 		strcat(text_section,aux);
 	}
 	current_function = function_name;
+
+
+/*
+ *	TODO:USE VALIDATE FUNCTION HERE
+ * */	
+	addSymbolTable(newSymbolTable(current_function),scopes);
+
+}
+
+/*
+ * End a current function
+ *
+ * */
+void 
+end_function()
+{
+   current_function = "global";
 }
 
 /*
  *	Building a stack with size as parameter
+ *
  * */
 void init_stack(const int stack_size)
 {
@@ -349,6 +388,7 @@ void init_stack(const int stack_size)
 
 /*
  * Emptying stack in asm
+ *
  * */
 void finalize_stack()
 {
@@ -359,6 +399,7 @@ void finalize_stack()
 
 /*
  *	Insert a data into a stack using asm 
+ *
  * */
 void 
 push_to_stack(Data_type type)
@@ -382,6 +423,7 @@ push_to_stack(Data_type type)
 
 /*
  * Function used to read a variable in asm from stack
+ *
  * */
 void 
 read_variable(Data_type type,int offset)
@@ -404,23 +446,4 @@ read_variable(Data_type type,int offset)
 			break;
 	}
 	strcat(text_section,aux);
-}
-
-
-/*
- * Return false if a IDENTIFIER was found in a scope 
- * */
-int 
-validate_symbol_declaration(Symbol* symbol,char* scope,Vector* scopes)
-{
-	SymbolTable* current = findTable(scope,scopes); 
-    while(current != NULL)
-	{
-		Symbol* s = current->value;
-		if( s != NULL)
-			if ( ! strcmp(s->name,symbol->name)) 
-				return 0;
-        current = current->next;
-	}
-	return 1;
 }

@@ -7,7 +7,7 @@
 #include "vector.h"
 #include "symbol_table.h"
 #include "symbol.h"
-#include "definitions.h"
+#include "validate.h"
 
 
 /*
@@ -20,6 +20,9 @@ void init_bss();
 void init_data();
 void init_text();
 
+/*
+ *	Open and Close file nasm
+ * */
 void open_asm();
 void close_asm();
 /**
@@ -35,17 +38,14 @@ void close_text();
  *
  *	FUNCTIONS TO INCREMENT A SECTION
  *
- *
  * */
 void add_symbol_to_scopes(char* c_type,
 						  char* string,
 						  char* value,
-						  int initialized,
-						  char* scope);
+						  int initialized);
 void declare_bss(char* name,int type);
 void declarate_data(char* name, int data_type, void* value);
 
-int validate_symbol_declaration(Symbol* symbol,char* scope,Vector* scopes);
 /*
  *	OPERAND_STACK
  *

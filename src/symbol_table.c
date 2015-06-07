@@ -97,6 +97,9 @@ get_position_stack(Symbol*symbol)
 void 
 print_table_LR(SymbolTable* symbol_table)
 {
+	if (!symbol_table) {
+		printf("NONE TABLE");
+	}
 	SymbolTable* current = symbol_table;
 	printf("Symbol[");
 	while( current->next != NULL)
@@ -114,6 +117,9 @@ print_table_LR(SymbolTable* symbol_table)
 void 
 print_table_RL(SymbolTable* symbol_table)
 {
+	if (!symbol_table) {
+		printf("NONE TABLE");
+	}
 	SymbolTable* current = symbol_table->tail;
 	printf("Symbol[");
 	while( current->prev != NULL)

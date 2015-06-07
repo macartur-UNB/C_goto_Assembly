@@ -47,10 +47,10 @@
 %%
 
 Start:
-    | Start Line                     
+    | Start Line  									                   
 	;
 Line:
-	 Declaration					 
+	 Declaration
 	;
 Declaration:
 	Global_declaration  							{	close_bss(); close_data(); } 
@@ -73,14 +73,14 @@ Global_declaration:
     /* Global Uninitialized Variable */
 	C_TYPE IDENTIFIER SEMICOLON
         {
-            add_symbol_to_scopes($1,$2,"0",0,"global");
+            add_symbol_to_scopes($1,$2,"0",0);
             printf("Global Uninitialized Variable %s\n", $2);
         }
     
     /* Global Initialized Variable */
     | C_TYPE IDENTIFIER RECEIVE Literal SEMICOLON
         {
-            add_symbol_to_scopes($1,$2,$4,1,"global");
+            add_symbol_to_scopes($1,$2,$4,1);
             printf("Global Initialized Variable %s = %s\n", $2, $4);
         }
 	;
@@ -88,12 +88,14 @@ Local_declaration:
 	/* Local Uninitialized Variable */
     C_TYPE IDENTIFIER SEMICOLON 
         {    
+            add_symbol_to_scopes($1,$2,"0",0);
             printf("\tLocal Variable %s\n",$2);
         }
     
     /* Local Initialized Variable */
     | C_TYPE IDENTIFIER RECEIVE Literal SEMICOLON
         {   
+            add_symbol_to_scopes($1,$2,$4,1);
             printf("\tLocal Initialized Variable %s = %s\n", $2, $4);
         }
 	;
@@ -150,7 +152,7 @@ Expression:
 
 /* YACC ERROR*/
 void yyerror(const char *s){
-	fprintf(stderr, "Error - %s - %d\n", s,yylineno);
+	fprintf(stderr, "Error: line %d - %s\n",yylineno, s);
 }
 
 
