@@ -442,6 +442,7 @@ push_to_stack(Data_type type)
 void
 push_to_operand_stack(Data_type type, int is_literal, const char* operand) {
 	printf("OPERAND STACK FUNCTION\n");
+    int result;
 	char instruction[300];
 	char aux[100];
 	int four_bytes_operand = (type == DOUBLE_T || type == LONG_T || type == PTR_T);
@@ -450,7 +451,8 @@ push_to_operand_stack(Data_type type, int is_literal, const char* operand) {
 		sprintf(aux, "%s", four_bytes_operand ? "\tpush eax\n" : "\tpush word ax\n");
 	} else {
 		sprintf(instruction, "\txor eax, eax\n");
-		read_variable(type, result = get_variable_position(operand));
+        result = get_variable_position(operand);
+		read_variable(type,result);
 		sprintf(aux, "%s", four_bytes_operand ? "\tpush eax\n" : "\tpush word ax\n");
 	}
 	strcat(instruction, aux);
@@ -558,6 +560,6 @@ void mult() {
 
 }
 
-void div() {
+void _div() {
 	
 }

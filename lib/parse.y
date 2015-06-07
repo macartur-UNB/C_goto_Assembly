@@ -34,6 +34,11 @@
 %token BIGGER_OR_EQUAL LESS_OR_EQUAL
 %token EQUAL DIFFERENT NOT
 
+
+%token IF ELSE
+%token WHILE DO CASE SWITCH
+%token AND_AND OR_OR
+
 %token RETURN
 %token END
 %token SEMICOLON COMMA
