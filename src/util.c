@@ -33,7 +33,7 @@ void open_asm(char* file_name)
 void 
 close_asm()
 {
-	write_constants(assembly_file);	
+	close_text();
 	if ( bss_section != NULL )
 		fprintf(assembly_file,"%s",bss_section);
     if (data_section != NULL)
@@ -351,9 +351,19 @@ initialize_functions(char* function_name,char* return_of_function)
 
 	if (text_section == NULL) init_text();
 
-	char aux[100];
-	sprintf(aux,"%s:\n",function_name);
-	strcat(text_section,aux);
+  if((!strcmp(function_name,"main")))
+  {
+      strcat(text_section,"_start:\n");
+      init_stack(1024);
+  }
+	else
+	{
+		finalize_stack();
+		char aux[100];
+		sprintf(aux,"%s:\n",function_name);
+		strcat(text_section,aux);
+		init_stack(1024);
+	}
 
 	result = function_was_declared(function_name,functions);
 	if(!result)
@@ -400,7 +410,7 @@ void init_stack(const int stack_size)
 void finalize_stack()
 {
 	char prologo[100];
-	sprintf(prologo,"\tmov esp, ebp\n\tpop ebp");;
+	sprintf(prologo,"\tmov esp, ebp\n\tpop ebp\n\tret\n");
 	strcat(text_section,prologo);
 }
 
@@ -426,14 +436,95 @@ push_to_stack(Data_type type)
 			strcat(text_section,"\tpush eax\n");
 			break;
 	}
-}   
+}
+
+/* TODO: FIX DOUBLE LITERAL NUMBERS */
+void
+push_to_operand_stack(Data_type type, int is_literal, const char* operand) {
+	printf("OPERAND STACK FUNCTION\n");
+	char instruction[300];
+	char aux[100];
+	int four_bytes_operand = (type == DOUBLE_T || type == LONG_T || type == PTR_T);
+	if(is_literal) {
+		sprintf(instruction, "\tmov eax, %s\n", operand);
+		sprintf(aux, "%s", four_bytes_operand ? "\tpush eax\n" : "\tpush word ax\n");
+	} else {
+		sprintf(instruction, "\txor eax, eax\n");
+		read_variable(type, result = get_variable_position(operand));
+		sprintf(aux, "%s", four_bytes_operand ? "\tpush eax\n" : "\tpush word ax\n");
+	}
+	strcat(instruction, aux);
+	strcat(text_section, instruction);
+	strcat(text_section, "\n");
+}
+
+/* RETURNS THE VARIABLE POSITION IN THE SYMBOL TABLE IN BYTES */
+int
+get_variable_position(char* name) {
+	SymbolTable* symbol_table = findTable(current_function, scopes); 
+	if (!symbol_table) {
+		exit(EXIT_FAILURE);
+	}
+	SymbolTable* current = symbol_table->tail;
+	Symbol* s;
+	int counter = 0;
+	while(current->prev != NULL)
+	{
+		s = current->value;
+		counter += get_variable_size(current->value->data_type);
+		if(!strcmp(s->name, name)) {
+			return counter;
+		}
+		current = current->prev;
+	}
+	
+	return -1;
+}
+
+Data_type
+get_variable_data_type(const char* name) {
+	SymbolTable* symbol_table = findTable(current_function, scopes); 
+	if (!symbol_table) {
+		printf("ERRO TABELA NULA\n");
+		exit(EXIT_FAILURE);
+	}
+	SymbolTable* current = symbol_table->tail;
+	Symbol* s;
+	while(current->prev != NULL)
+	{
+		s = current->value;
+		printf("%s\n", s->name);
+		if(!strcmp(s->name, name)) {
+			return s->data_type;
+		}
+		current = current->prev;
+	}
+	printf("ERRO, VARIÁVEL NÃO ENCONTRADA NA TABELA");
+	exit(EXIT_FAILURE);
+}
+
+int
+get_variable_size(Data_type type) {
+	switch(type)
+	{
+		case CHAR_T:
+		case SHORT_T:
+		case INT_T:
+		case FLOAT_T:
+			return 2;
+		case DOUBLE_T:
+		case LONG_T:
+		case PTR_T:
+			return 4;
+	}
+}
 
 /*
  * Function used to read a variable in asm from stack
  *
  * */
-void 
-read_variable(Data_type type,int offset)
+void
+read_variable(Data_type type, int offset)
 {
 	char aux[100];
 	switch(type)
@@ -453,4 +544,20 @@ read_variable(Data_type type,int offset)
 			break;
 	}
 	strcat(text_section,aux);
+}
+
+void add() {
+
+}
+
+void sub() {
+
+}
+
+void mult() {
+
+}
+
+void div() {
+	
 }

@@ -56,6 +56,8 @@ void init_stack(const int stack_size);
 void finalize_stack();
 void push_to_stack(Data_type type);
 void read_variable(Data_type type,int offset);
+Data_type get_variable_data_type(const char* name);
+void push_to_operand_stack(Data_type type, int is_literal, const char* operand);
 /*
  *	EXTRACT INFORMATION FROM STRING
  *
