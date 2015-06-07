@@ -10,21 +10,13 @@ char nome;
 float data;
 
 int main(){
-    int age;
-    int age;
-    char letra = 's';
-    int x;
-    int y = 5;
-    double len = 10.5;
-    char name = "Teste";
     
+	if ( 3 + 4 )
+	{
+	}else{
+	}else{
+	}
+
     return 0;
 }
 
-int add(){
-    char age;
-}
-
-int add(){
-    char age;
-}

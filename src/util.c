@@ -1,4 +1,5 @@
 #include "util.h"
+#include "definition.h"
 
 // out put file
 FILE * assembly_file;
@@ -32,6 +33,7 @@ void open_asm(char* file_name)
 void 
 close_asm()
 {
+	write_constants(assembly_file);	
 	if ( bss_section != NULL )
 		fprintf(assembly_file,"%s",bss_section);
     if (data_section != NULL)
@@ -65,7 +67,7 @@ init_text()
 	
     strcpy(text_section,"section .text\n");
     
-    strcat(text_section, "\tglobal _start\n\n");
+    strcat(text_section, "\tglobal main\n\n");
 }
 
 /*
@@ -349,21 +351,11 @@ initialize_functions(char* function_name,char* return_of_function)
 
 	if (text_section == NULL) init_text();
 
-    if((!strcmp(function_name,"main")))
-    {
-        strcat(text_section,"_start:\n");
-    }
-	else
-	{
-		char aux[100];
-		sprintf(aux,"%s:\n",function_name);
-		strcat(text_section,aux);
-	}
-
+	char aux[100];
+	sprintf(aux,"%s:\n",function_name);
+	strcat(text_section,aux);
 
 	result = function_was_declared(function_name,functions);
-
-	print_functions(functions);
 	if(!result)
 	{
 	 newFunction = new_function(get_data_type_id(return_of_function),

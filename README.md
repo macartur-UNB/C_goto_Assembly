@@ -23,6 +23,6 @@ $ make
 
 ### COMPLE ASSEMBLY
 ```sh
-    $ nasm -f <program>.asm
-    $ ld -m elf_386 -o <program> <program>.o
+    $ nasm -f elf32 <program>.asm
+    $ gcc -m32 <program>.o -o <program>
 ```
