@@ -77,7 +77,7 @@ init_asm(char* file_name)
 {
 	current_function = "global";
 	scopes = newVector();
-	functions = newFunctionTable(NULL,NULL,NULL);
+	functions = newFunctionTable(NULL,NULL,NULL,NULL);
 	addSymbolTable(newSymbolTable(current_function),scopes);
 	open_asm(file_name);
 }
@@ -360,17 +360,10 @@ initialize_functions(char* function_name,char* return_of_function)
 		strcat(text_section,aux);
 	}
 
-	/*
- *
- *		TODO:NEEDS FIX HERE THERE ARE A PROBLEM HERE
- *
- * */
-	printf("-----------------\n");
-	print_functions(functions);
-	printf("-----------------\n");
+
 	result = function_was_declared(function_name,functions);
-	printf("-----[%d]-----\n",result);
-	
+
+	print_functions(functions);
 	if(!result)
 	{
 	 newFunction = new_function(get_data_type_id(return_of_function),
@@ -380,8 +373,7 @@ initialize_functions(char* function_name,char* return_of_function)
 	 current_function = function_name;
 	}
 	else{
-	printf("***********************************\n");
-     sprintf(error,"The Function %s is already declared.",function_name);
+     sprintf(error,"The Function %s was previously declared.",function_name);
 	 yyerror(error);
 	}
 }

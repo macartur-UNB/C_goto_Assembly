@@ -21,8 +21,10 @@ int main(){
     return 0;
 }
 
-int main(){
+int add(){
+    char age;
 }
 
-int main(){
+int add(){
+    char age;
 }

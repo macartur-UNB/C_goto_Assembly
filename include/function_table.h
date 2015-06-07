@@ -4,11 +4,12 @@
 
 typedef struct _Function_table {
     Function* value;
+    struct _Function_table* head;
 	struct _Function_table* tail;
 	struct _Function_table* next;
 }Function_table;
 
-Function_table* newFunctionTable(Function* value,Function_table* tailf,Function_table* next);
+Function_table* newFunctionTable(Function* value,Function_table* head,Function_table* tailf,Function_table* next);
 void addFunctionTable(Function* function,Function_table* function_table);
 Function* find_function(char* function_name,Function_table* function_table);
 void free_function_table(Function_table* function_table);

@@ -54,7 +54,7 @@ Line:
 	;
 Declaration:
 	Global_declaration  							{	close_bss(); close_data(); } 
-    | Function START_KEYS  Scope  END_KEYS			{	end_function();	           }
+    | Function START_KEYS  Scope  END_KEYS			{	end_function(); 	}
 	;
 Scope:
 	/* empty */							
@@ -64,7 +64,7 @@ Scope:
 	;
 Function:
 	C_TYPE IDENTIFIER	START_PARENTHESES	END_PARENTHESES	 
-        {
+        {  
             initialize_functions($2,$1);
             printf("Function: %s\n", $2);
         }
