@@ -34,6 +34,12 @@
 %token BIGGER_OR_EQUAL LESS_OR_EQUAL
 %token EQUAL DIFFERENT NOT
 
+
+%token IF ELSE
+%token WHILE DO CASE SWITCH
+%token AND_AND OR_OR
+
+
 %token RETURN
 %token END
 %token SEMICOLON COMMA
@@ -49,72 +55,113 @@
 Start:
     | Start Line  									                   
 	;
+
 Line:
-	 Declaration
-	;
-Declaration:
-	Global_declaration  							{	close_bss(); close_data(); } 
-    | Function START_KEYS  Scope  END_KEYS			{	end_function(); 	}
-	;
-Scope:
-	/* empty */							
-	| Scope Local_declaration 			 
-	| Scope RETURN Literal SEMICOLON   
-	| Scope Expression SEMICOLON;
-	;
-Function:
-	C_TYPE IDENTIFIER	START_PARENTHESES	END_PARENTHESES	 
-        {  
-            initialize_functions($2,$1);
-            printf("Function: %s\n", $2);
-        }
-	;
-Global_declaration:
-    /* Global Uninitialized Variable */
-	C_TYPE IDENTIFIER SEMICOLON
-        {
-            add_symbol_to_scopes($1,$2,"0",0);
-            printf("Global Uninitialized Variable %s\n", $2);
-        }
-    
-    /* Global Initialized Variable */
-    | C_TYPE IDENTIFIER RECEIVE Literal SEMICOLON
-        {
-            add_symbol_to_scopes($1,$2,$4,1);
-            printf("Global Initialized Variable %s = %s\n", $2, $4);
-        }
-	;
-Local_declaration:
-	/* Local Uninitialized Variable */
-    C_TYPE IDENTIFIER SEMICOLON 
-        {    
-            add_symbol_to_scopes($1,$2,"0",0);
-            printf("\tLocal Variable %s\n",$2);
-        }
-    
-    /* Local Initialized Variable */
-    | C_TYPE IDENTIFIER RECEIVE Literal SEMICOLON
-        {   
-            add_symbol_to_scopes($1,$2,$4,1);
-            printf("\tLocal Initialized Variable %s = %s\n", $2, $4);
-        }
+	Declaration
 	;
 
+Declaration:
+	Global_declaration      
+    {
+      close_bss(); close_data(); 
+    }
+    | Function START_KEYS  Scope  END_KEYS  
+    {
+      end_function();
+    }
+	;
+
+
+Function:
+	C_TYPE IDENTIFIER	START_PARENTHESES	END_PARENTHESES 
+    {
+      initialize_functions($2,$1); 
+      printf("Function: %s\n", $2);
+    }
+	;
+
+Global_declaration:
+    /* Global Uninitialized Variable */
+	C_TYPE IDENTIFIER SEMICOLON  
+    {
+      add_symbol_to_scopes($1,$2,"0",0);
+      printf("Global Uninitialized Variable %s\n", $2);
+    }
+    
+    /* Global Initialized Variable */
+    | C_TYPE IDENTIFIER RECEIVE Literal SEMICOLON 
+    {
+      add_symbol_to_scopes($1,$2,$4,1);
+      printf("Global Initialized Variable %s = %s\n", $2, $4);
+    }
+	;
+
+Local_declaration:
+	/* Local Uninitialized Variable */
+    C_TYPE IDENTIFIER SEMICOLON  
+    {    
+      add_symbol_to_scopes($1,$2,"0",0);
+      printf("\tLocal Variable %s\n",$2);
+    }
+    /* Local Initialized Variable */
+    | C_TYPE IDENTIFIER RECEIVE Literal SEMICOLON  
+    { 
+      add_symbol_to_scopes($1,$2,$4,1);
+      printf("\tLocal Initialized Variable %s = %s\n", $2, $4);
+    }
+	;
+
+Scope:
+	/* empty */
+	| Scope Local_declaration
+	| Scope Expression SEMICOLON
+    | Scope IF_Expression              
+	| Scope RETURN Literal SEMICOLON
+	;
+
+
+IF_Expression:
+    /*     if (Condition) { Scope }*/
+    IF START_PARENTHESES Condition END_PARENTHESES START_KEYS Scope END_KEYS    
+    {
+        printf("IF EXPRESSION 1\n");
+    }
+    /*   if (Condition) { Scope } else if (Condition) { Scope }*/
+    |IF_Expression ELSE IF_Expression
+    {
+        printf("IF EXPRESSION 2\n");
+    }
+    /*  if (Condition) { Scope } else { Scope}*/
+    | IF_Expression ELSE START_KEYS Scope END_KEYS
+    {    
+        printf("IF EXPRESSION 3\n");
+    }
+    ;
+
+Condition:
+    Expression
+    ;
+
+
 Literal:
-    INTEGER { $$=$1;}
-    | FLOAT { $$=$1;}
-    | DOUBLE { $$=$1;}
-    | CHAR { $$=$1;}
-    | STRING { $$=$1;}
+    INTEGER     { $$=$1;}
+    | FLOAT     { $$=$1;}
+    | DOUBLE    { $$=$1;}
+    | CHAR      { $$=$1;}
+    | STRING    { $$=$1;}
     ;
 
 Expression:
-	IDENTIFIER {$$=$1;}
-    | INTEGER  {$$ = $1;}
-    | FLOAT  {$$ = $1;}
-    | DOUBLE {$$ = $1;}
-    | CHAR   {$$ = $1;}
-	| START_PARENTHESES Expression END_PARENTHESES { $$ = $2 ;printf("( %s )",$2);   }
+	IDENTIFIER  {$$=$1;}
+    | INTEGER   {$$=$1;}
+    | FLOAT     {$$=$1;}
+    | DOUBLE    {$$=$1;}
+    | CHAR      {$$=$1;}
+	| START_PARENTHESES Expression END_PARENTHESES 
+                {
+                 $$=$2;
+                 printf("( %s )",$2);
+                }
 	| Expression PLUS Expression     {  
 										char string_v[100];
 										sprintf(string_v,"%s+%s",$1,$3);
@@ -132,20 +179,20 @@ Expression:
 										sprintf(string_v,"%s*%s",$1,$3);
 										$$ = string_v;
 										printf("%s * %s\n",$1,$3); 
-										}
-	| Expression DIV Expression        {
+									  }
+	| Expression DIV Expression       {
 										char string_v[100];
 										sprintf(string_v,"%s/%s",$1,$3);
 										$$ = string_v;
 										printf("%s / %s\n",$1,$3); 
-										}
+									  }
 
-	| Expression MOD Expression    {
+	| Expression MOD Expression       {
 										char string_v[100];
 										sprintf(string_v,"%s mod %s",$1,$3);
 										$$ = string_v;
 										printf("%s mod %s\n",$1,$3); 
-										}
+									  }
 	;
 
 %%

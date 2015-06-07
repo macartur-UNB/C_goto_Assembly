@@ -37,6 +37,14 @@ float               {integer}("."{integer})?{exponant}?f
 {integer}               { yylval =  strdup(yytext); return INTEGER; }
 {double}                { yylval =  strdup(yytext); return DOUBLE;  }
 {float}                 { yylval =  strdup(yytext); return FLOAT;   }
+"if"					{ yylval =  strdup(yytext); return IF;		}
+"else"					{ yylval =  strdup(yytext); return ELSE;	}
+"while"					{ yylval =  strdup(yytext); return WHILE;	}
+"do"					{ yylval =  strdup(yytext); return DO;  	}
+"case"					{ yylval =  strdup(yytext); return CASE;	}
+"switch"				{ yylval =  strdup(yytext); return SWITCH;	}
+"&&"					{ yylval =  strdup(yytext); return AND_AND;	}
+"||"					{ yylval =  strdup(yytext); return OR_OR;	}
 "("                     { return   START_PARENTHESES;               }
 ")"                     { return   END_PARENTHESES;                 }
 "{"                     { return   START_KEYS;                      }
