@@ -260,19 +260,19 @@ void declare_data(char* name, int data_type)
 		switch(data_type)
 		{
 		case CHAR_T: 
-			strcat(data_section," db 1 \n");break;
+			strcat(data_section,": db 1 \n");break;
 		case SHORT_T:
-			strcat(data_section," dw 1 \n");break;
+			strcat(data_section,": dw 1 \n");break;
 		case INT_T:
-			strcat(data_section," dd 1 \n");break;
+			strcat(data_section,": dd 1 \n");break;
 		case LONG_T:
-			strcat(data_section, " dd 1 \n");break;
+			strcat(data_section, ": dd 1 \n");break;
 		case FLOAT_T:
-			strcat(data_section, " dd 1 \n");break;
+			strcat(data_section, ": dd 1 \n");break;
 		case DOUBLE_T:
-			strcat(data_section ," dd 1 \n" );break;
+			strcat(data_section ,": dd 1 \n" );break;
 		case PTR_T: 
-			strcat(data_section," dw 1 \n");break;
+			strcat(data_section,": dw 1 \n");break;
 		}
 }
 
