@@ -175,9 +175,7 @@ add_symbol_to_scopes(char* c_type,
 			current = newLong(literal,strtol(value,NULL,10),initialized);
 			break;
 		case PTR_T:
-			/*
-			 *		TODO 				
-			 *		*/
+            /*  TODO: fix it*/
 			break;
 		}	
 
@@ -351,11 +349,11 @@ initialize_functions(char* function_name,char* return_of_function)
 
 	if (text_section == NULL) init_text();
 
-  if((!strcmp(function_name,"main")))
-  {
+    if((!strcmp(function_name,"main")))
+    {
       strcat(text_section,"main:\n");
       init_stack(1024);
-  }
+    }
 	else
 	{
 		finalize_stack();
@@ -441,8 +439,7 @@ push_to_stack(Data_type type)
 /* TODO: FIX DOUBLE LITERAL NUMBERS */
 void
 push_to_operand_stack(Data_type type, int is_literal, const char* operand) {
-	printf("OPERAND STACK FUNCTION\n");
-  int result;
+    int result;
 	char instruction[300];
 	char aux[100];
 	int four_bytes_operand = (type == DOUBLE_T || type == LONG_T || type == PTR_T);
@@ -501,7 +498,6 @@ get_variable_data_type(const char* name) {
 		}
 		current = current->prev;
 	}
-	printf("ERRO, VARIÁVEL NÃO ENCONTRADA NA TABELA");
 	exit(EXIT_FAILURE);
 }
 

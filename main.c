@@ -19,4 +19,7 @@ int main(){
     return 0;
 }
 int add(){
+    int age = 14;
+    return 0;
 }
+

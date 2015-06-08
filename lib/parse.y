@@ -176,6 +176,6 @@ int main(void)
     sprintf(file_in,"%s.c",file_name);
     init_asm(file_name);
     yyin = fopen(file_in,"r");
-    yylineno = 1; // count of files
+    yylineno = 1; 
     yyparse();
 }

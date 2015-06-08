@@ -21,7 +21,7 @@ $ make
     $ make run
 ```
 
-### COMPLE ASSEMBLY
+### COMPILE ASSEMBLY
 ```sh
     $ nasm -f elf32 <program>.asm
     $ gcc -m32 <program>.o -o <program>
