@@ -7,6 +7,9 @@
 
 #include <string.h>
 
+int i = 0;
+Data_type operand_stack_data_types[2];
+
 %}
 
 %token IDENTIFIER
@@ -114,35 +117,39 @@ Literal:
     ;
 
 Expression:
-	IDENTIFIER {$$=$1; push_to_operand_stack(get_variable_data_type(strdup($$)), 0, strdup($$)); }
-    | INTEGER  {$$ = $1; push_to_operand_stack(INT_T, 1, strdup($$));}
-    | FLOAT  {$$ = $1; push_to_operand_stack(FLOAT_T, 1, strdup($$));}
-    | DOUBLE {$$ = $1; push_to_operand_stack(DOUBLE_T, 1, strdup($$));}
-    | CHAR   {$$ = $1; push_to_operand_stack(CHAR_T, 1, strdup($$));}
+	IDENTIFIER {$$=$1; push_to_operand_stack(operand_stack_data_types[i++] = get_variable_data_type(strdup($$)), 0, strdup($$)); if(i == 2) i = 0; }
+    | INTEGER  {$$ = $1; push_to_operand_stack(operand_stack_data_types[i++] = INT_T, 1, strdup($$)); if(i == 2) i = 0; }
+    | FLOAT  {$$ = $1; push_to_operand_stack(operand_stack_data_types[i++] = FLOAT_T, 1, strdup($$)); if(i == 2) i = 0; }
+    | DOUBLE {$$ = $1; push_to_operand_stack(operand_stack_data_types[i++] = DOUBLE_T, 1, strdup($$)); if(i == 2) i = 0; }
+    | CHAR   {$$ = $1; push_to_operand_stack(operand_stack_data_types[i++] = CHAR_T, 1, strdup($$)); if(i == 2) i = 0; }
 	| START_PARENTHESES Expression END_PARENTHESES { $$ = $2 ;printf("( %s )",$2);   }
 	| Expression PLUS Expression     {  
 										char string_v[100];
 										sprintf(string_v,"%s+%s",$1,$3);
 										$$ = string_v;
-										printf("%s + %s\n",$1,$3); 
+										printf("%s + %s\n",$1,$3);
+										operate_stack_operands(operand_stack_data_types[0], operand_stack_data_types[1], 0);
 									  }
 	| Expression MINUS Expression     { 
 										char string_v[100];
 										sprintf(string_v,"%s-%s",$1,$3);
 										$$ = string_v;
 										 printf("%s - %s\n",$1,$3); 
+										 operate_stack_operands(operand_stack_data_types[0], operand_stack_data_types[1], 1);
 									  }
 	| Expression TIMES Expression     {
 										char string_v[100];
 										sprintf(string_v,"%s*%s",$1,$3);
 										$$ = string_v;
 										printf("%s * %s\n",$1,$3); 
+										operate_stack_operands(operand_stack_data_types[0], operand_stack_data_types[1], 2);
 										}
 	| Expression DIV Expression        {
 										char string_v[100];
 										sprintf(string_v,"%s/%s",$1,$3);
 										$$ = string_v;
 										printf("%s / %s\n",$1,$3); 
+										operate_stack_operands(operand_stack_data_types[0], operand_stack_data_types[1], 3);
 										}
 
 	| Expression MOD Expression    {

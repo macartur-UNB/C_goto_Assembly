@@ -353,7 +353,7 @@ initialize_functions(char* function_name,char* return_of_function)
 
   if((!strcmp(function_name,"main")))
   {
-      strcat(text_section,"_start:\n");
+      strcat(text_section,"main:\n");
       init_stack(1024);
   }
 	else
@@ -410,7 +410,7 @@ void init_stack(const int stack_size)
 void finalize_stack()
 {
 	char prologo[100];
-	sprintf(prologo,"\tmov esp, ebp\n\tpop ebp\n\tret\n");
+	sprintf(prologo,"\tmov esp, ebp\n\tpop ebp\n");
 	strcat(text_section,prologo);
 }
 
@@ -442,7 +442,7 @@ push_to_stack(Data_type type)
 void
 push_to_operand_stack(Data_type type, int is_literal, const char* operand) {
 	printf("OPERAND STACK FUNCTION\n");
-    int result;
+  int result;
 	char instruction[300];
 	char aux[100];
 	int four_bytes_operand = (type == DOUBLE_T || type == LONG_T || type == PTR_T);
@@ -450,9 +450,9 @@ push_to_operand_stack(Data_type type, int is_literal, const char* operand) {
 		sprintf(instruction, "\tmov eax, %s\n", operand);
 		sprintf(aux, "%s", four_bytes_operand ? "\tpush eax\n" : "\tpush word ax\n");
 	} else {
-		sprintf(instruction, "\txor eax, eax\n");
-        result = get_variable_position(operand);
-		read_variable(type,result);
+		//sprintf(instruction, "\txor eax, eax\n");
+    result = get_variable_position(operand);
+		read_variable(type, result);
 		sprintf(aux, "%s", four_bytes_operand ? "\tpush eax\n" : "\tpush word ax\n");
 	}
 	strcat(instruction, aux);
@@ -548,18 +548,34 @@ read_variable(Data_type type, int offset)
 	strcat(text_section,aux);
 }
 
-void add() {
-
-}
-
-void sub() {
-
-}
-
-void mult() {
-
-}
-
-void _div() {
+void operate_stack_operands(Data_type first_operand_data_type, Data_type second_operand_data_type, int op) {
+	Data_type data_types[2]; 
+	data_types[0] = first_operand_data_type;
+	data_types[1] = second_operand_data_type;
+	int i, reg;
+	char aux[50];
+	char temp[100];
+	char instruction[300] = "";
+	char operation[200] = "\txor eax, eax\n\txor ebx, ebx\n";
+	strcat(instruction, operation);
+	for(i = 0, reg = 97; i < 2; i++, reg++) {
+		switch(data_types[i]) {
+			case CHAR_T:
+			case SHORT_T:
+			case INT_T:
+			case FLOAT_T:
+				sprintf(aux,"\tpop WORD %cx\n", reg);
+				break;
+			case DOUBLE_T:
+			case LONG_T:
+			case PTR_T:
+				sprintf(aux,"\tpop e%cx\n", reg);
+				break;
+		}
+		strcat(instruction, aux);
+	}
+	sprintf(temp, "\t%sebx\n\tpush eax\n\n", op == 0 ? "add eax, " : op == 1 ? "sub eax, " : op == 2 ? "imul " : "div");
+	strcat(instruction, temp);
+	strcat(text_section, instruction);
 	
 }

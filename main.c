@@ -3,8 +3,7 @@
 
 char hair = 'H';
 char sex = 'M';
-int test = 235;
-int test = 235;
+int teste = 235;
 float precision = 10.5f;
 char nome;
 float data;
@@ -14,9 +13,9 @@ int main(){
     char letra = 's';
     int x;
     int y = 5;
-    double len = 10.5;
+    int len = 10;
     char name = "Teste";
-    x + 3 + 2.3;
+    x + 3 - 2;
     return 0;
 }
 int add(){
