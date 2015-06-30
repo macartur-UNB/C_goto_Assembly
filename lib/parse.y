@@ -2,14 +2,9 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "global.h"
-
 #include <string.h>
 
-int i = 0;
-Data_type operand_stack_data_types[2];
-
+#include "global.h"
 %}
 
 %token IDENTIFIER
@@ -65,7 +60,8 @@ Declaration:
     | Function START_KEYS  Scope  END_KEYS			{	end_function(); 	}
 	;
 Scope:
-	/* empty */							
+	/* empty */
+	| Scope Attribution	
 	| Scope Local_declaration 			 
 	| Scope RETURN Literal SEMICOLON   
 	| Scope Expression SEMICOLON;
@@ -109,47 +105,47 @@ Local_declaration:
 	;
 
 Literal:
-    INTEGER { $$=$1;}
-    | FLOAT { $$=$1;}
-    | DOUBLE { $$=$1;}
-    | CHAR { $$=$1;}
-    | STRING { $$=$1;}
+    INTEGER {$$=$1;}
+    | FLOAT {$$=$1;}
+    | DOUBLE{$$=$1;}
+    | CHAR  {$$=$1;}
+    | STRING{$$=$1;}
     ;
 
 Expression:
-	IDENTIFIER {$$=$1; push_to_operand_stack(operand_stack_data_types[i++] = get_variable_data_type(strdup($$)), 0, strdup($$)); if(i == 2) i = 0; }
-    | INTEGER  {$$ = $1; push_to_operand_stack(operand_stack_data_types[i++] = INT_T, 1, strdup($$)); if(i == 2) i = 0; }
-    | FLOAT  {$$ = $1; push_to_operand_stack(operand_stack_data_types[i++] = FLOAT_T, 1, strdup($$)); if(i == 2) i = 0; }
-    | DOUBLE {$$ = $1; push_to_operand_stack(operand_stack_data_types[i++] = DOUBLE_T, 1, strdup($$)); if(i == 2) i = 0; }
-    | CHAR   {$$ = $1; push_to_operand_stack(operand_stack_data_types[i++] = CHAR_T, 1, strdup($$)); if(i == 2) i = 0; }
+	IDENTIFIER{$$=$1;push_to_stack($1,0);}
+    | CHAR    {$$=$1;push_to_stack($1,1);}
+    | INTEGER {$$=$1;push_to_stack($1,2);}
+    | FLOAT   {$$=$1;push_to_stack($1,3);}
+    | DOUBLE  {$$=$1;push_to_stack($1,4);}
 	| START_PARENTHESES Expression END_PARENTHESES { $$ = $2 ;printf("( %s )",$2);   }
 	| Expression PLUS Expression     {  
 										char string_v[100];
 										sprintf(string_v,"%s+%s",$1,$3);
 										$$ = string_v;
 										printf("%s + %s\n",$1,$3);
-										operate_stack_operands(operand_stack_data_types[0], operand_stack_data_types[1], 0);
+                                        make_operation(0);
 									  }
 	| Expression MINUS Expression     { 
 										char string_v[100];
 										sprintf(string_v,"%s-%s",$1,$3);
 										$$ = string_v;
 										 printf("%s - %s\n",$1,$3); 
-										 operate_stack_operands(operand_stack_data_types[0], operand_stack_data_types[1], 1);
+                                        make_operation(1);
 									  }
 	| Expression TIMES Expression     {
 										char string_v[100];
 										sprintf(string_v,"%s*%s",$1,$3);
 										$$ = string_v;
 										printf("%s * %s\n",$1,$3); 
-										operate_stack_operands(operand_stack_data_types[0], operand_stack_data_types[1], 2);
+                                        make_operation(2);
 										}
 	| Expression DIV Expression        {
 										char string_v[100];
 										sprintf(string_v,"%s/%s",$1,$3);
 										$$ = string_v;
 										printf("%s / %s\n",$1,$3); 
-										operate_stack_operands(operand_stack_data_types[0], operand_stack_data_types[1], 3);
+                                        make_operation(3);
 										}
 
 	| Expression MOD Expression    {
@@ -157,8 +153,15 @@ Expression:
 										sprintf(string_v,"%s mod %s",$1,$3);
 										$$ = string_v;
 										printf("%s mod %s\n",$1,$3); 
+                                        make_operation(4);
 										}
+
 	;
+Attribution:
+	IDENTIFIER RECEIVE Expression SEMICOLON {}
+	;
+
+	
 
 %%
 

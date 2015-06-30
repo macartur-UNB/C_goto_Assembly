@@ -39,6 +39,10 @@ run_test:
 run:
 	./$(EXECUTABLE) 
 
+#try compile the main.asm
+test: main.c main.asm
+	nasm -f elf32 main.asm -o bin/main.o
+	gcc -m32 bin/main.o -o bin/test 
 
 # clear the executable
 clean:

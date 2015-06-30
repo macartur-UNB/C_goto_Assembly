@@ -8,6 +8,7 @@ FILE * assembly_file;
 char* bss_section;
 char* data_section;
 char* text_section;
+char* header_section;
 char* current_function; 
 
 /*
@@ -34,6 +35,9 @@ void
 close_asm()
 {
 	close_text();
+
+	if (header_section != NULL)
+		fprintf(assembly_file,"%s",header_section);
 	if ( bss_section != NULL )
 		fprintf(assembly_file,"%s",bss_section);
     if (data_section != NULL)
@@ -82,6 +86,7 @@ init_asm(char* file_name)
 	functions = newFunctionTable(NULL,NULL,NULL,NULL);
 	addSymbolTable(newSymbolTable(current_function),scopes);
 	open_asm(file_name);
+	include_extern_asm();
 }
 
 /*
@@ -213,13 +218,10 @@ void declare_bss(char* name, int data_type)
 		case CHAR_T: 
 			strcat(bss_section," resb 1 \n");break;
 		case SHORT_T:
-			strcat(bss_section," resw 1 \n");break;
 		case INT_T:
 			strcat(bss_section," resw 1 \n");break;
 		case LONG_T:
-			strcat(bss_section, " resd 1 \n");break;
 		case FLOAT_T:
-			strcat(bss_section, " resd 1 \n");break;
 		case DOUBLE_T:
 			strcat(bss_section ," resd 1 \n" );break;
 		case PTR_T: 
@@ -256,17 +258,14 @@ void declare_data(char* name, int data_type)
 		sprintf(aux,"\t%s",name);
 		strcat(data_section,aux);
 		switch(data_type)
-		{
+	   {	
 		case CHAR_T: 
 			strcat(data_section,": db 1 \n");break;
 		case SHORT_T:
 			strcat(data_section,": dw 1 \n");break;
 		case INT_T:
-			strcat(data_section,": dd 1 \n");break;
 		case LONG_T:
-			strcat(data_section, ": dd 1 \n");break;
 		case FLOAT_T:
-			strcat(data_section, ": dd 1 \n");break;
 		case DOUBLE_T:
 			strcat(data_section ,": dd 1 \n" );break;
 		case PTR_T: 
@@ -333,7 +332,7 @@ void close_data()
  * */
 void close_text()
 {
-	finalize_stack();
+	finalize_stack(text_section);
 }
 
 /*
@@ -346,21 +345,22 @@ initialize_functions(char* function_name,char* return_of_function)
 	Function* newFunction=NULL;
 	int result=0;
 	char error[128];
+	char aux[100];
+	char* text = NULL;
 
 	if (text_section == NULL) init_text();
 
     if((!strcmp(function_name,"main")))
     {
       strcat(text_section,"main:\n");
-      init_stack(1024);
+      init_stack(text_section);
     }
 	else
 	{
-		finalize_stack();
-		char aux[100];
+		finalize_stack(text_section);
 		sprintf(aux,"%s:\n",function_name);
 		strcat(text_section,aux);
-		init_stack(1024);
+		init_stack(text_section);
 	}
 
 	result = function_was_declared(function_name,functions);
@@ -388,190 +388,35 @@ end_function()
    current_function = "global";
 }
 
-/*
- *	Building a stack with size as parameter
- *
- * */
-void init_stack(const int stack_size)
-{
-    char epilogue[100];
-    
-    sprintf(epilogue,"\tpush ebp\n\tmov ebp, esp\n\tsub esp, %d\n",stack_size);
-    
-    strcat(text_section, epilogue);
+void include_extern_asm(){
+	header_section = (char*) malloc(sizeof(char)*1000);
+	strcat(header_section,"extern printf\n");
+	strcat(header_section,"extern scanf\n");
 }
 
-/*
- * Emptying stack in asm
- *
- * */
-void finalize_stack()
-{
-	char prologo[100];
-	sprintf(prologo,"\tmov esp, ebp\n\tpop ebp\n");
-	strcat(text_section,prologo);
-}
-
-/*
- *	Insert a data into a stack using asm 
- *
- * */
-void 
-push_to_stack(Data_type type)
-{
+void push_to_stack(char* text,int type){
 	switch(type)
 	{
-		case CHAR_T:
-		case SHORT_T:
-			strcat(text_section,"\tpush word al\n");
-		case INT_T:
-		case FLOAT_T:
-			strcat(text_section,"\tpush word ax\n");
-			break;
-		case DOUBLE_T:
-		case LONG_T:
-		case PTR_T:
-			strcat(text_section,"\tpush eax\n");
-			break;
+	case 0:	push_variable_to_stack(text_section,text);break;
+	case 1: push_char_to_stack(text_section,text);break;
+	case 2: push_int_to_stack(text_section,text);break;
+	case 3:	push_float_to_stack(text_section,text);break;
+	case 4:	push_double_to_stack(text_section,text);break;
+	default:
+		break;
 	}
 }
-
-/* TODO: FIX DOUBLE LITERAL NUMBERS */
 void
-push_to_operand_stack(Data_type type, int is_literal, const char* operand) {
-    int result;
-	char instruction[300];
-	char aux[100];
-	int four_bytes_operand = (type == DOUBLE_T || type == LONG_T || type == PTR_T);
-	if(is_literal) {
-		sprintf(instruction, "\tmov eax, %s\n", operand);
-		sprintf(aux, "%s", four_bytes_operand ? "\tpush eax\n" : "\tpush word ax\n");
-	} else {
-		//sprintf(instruction, "\txor eax, eax\n");
-    result = get_variable_position(operand);
-		read_variable(type, result);
-		sprintf(aux, "%s", four_bytes_operand ? "\tpush eax\n" : "\tpush word ax\n");
-	}
-	strcat(instruction, aux);
-	strcat(text_section, instruction);
-	strcat(text_section, "\n");
-}
-
-/* RETURNS THE VARIABLE POSITION IN THE SYMBOL TABLE IN BYTES */
-int
-get_variable_position(char* name) {
-	SymbolTable* symbol_table = findTable(current_function, scopes); 
-	if (!symbol_table) {
-		exit(EXIT_FAILURE);
-	}
-	SymbolTable* current = symbol_table->tail;
-	Symbol* s;
-	int counter = 0;
-	while(current->prev != NULL)
-	{
-		s = current->value;
-		counter += get_variable_size(current->value->data_type);
-		if(!strcmp(s->name, name)) {
-			return counter;
-		}
-		current = current->prev;
-	}
-	
-	return -1;
-}
-
-Data_type
-get_variable_data_type(const char* name) {
-	SymbolTable* symbol_table = findTable(current_function, scopes); 
-	if (!symbol_table) {
-		printf("ERRO TABELA NULA\n");
-		exit(EXIT_FAILURE);
-	}
-	SymbolTable* current = symbol_table->tail;
-	Symbol* s;
-	while(current->prev != NULL)
-	{
-		s = current->value;
-		printf("%s\n", s->name);
-		if(!strcmp(s->name, name)) {
-			return s->data_type;
-		}
-		current = current->prev;
-	}
-	exit(EXIT_FAILURE);
-}
-
-int
-get_variable_size(Data_type type) {
-	switch(type)
-	{
-		case CHAR_T:
-		case SHORT_T:
-		case INT_T:
-		case FLOAT_T:
-			return 2;
-		case DOUBLE_T:
-		case LONG_T:
-		case PTR_T:
-			return 4;
-	}
-}
-
-/*
- * Function used to read a variable in asm from stack
- *
- * */
-void
-read_variable(Data_type type, int offset)
+make_operation(int operation)
 {
-	char aux[100];
-	switch(type)
+	switch(operation)
 	{
-		case CHAR_T:
-		case SHORT_T:
-			sprintf(aux,"\tmov al, BYTE [esp + %d]\n",offset);
-			break;
-		case INT_T:
-		case FLOAT_T:
-			sprintf(aux,"\tmov ax, WORD [esp + %d]\n",offset);
-			break;
-		case DOUBLE_T:
-		case LONG_T:
-		case PTR_T:
-			sprintf(aux,"\tmov eax, [esp + %d]\n",offset);
-			break;
+	case 0:	sum_and_push(text_section);    break;
+	case 1: sub_and_push(text_section);    break;
+	case 2: mult_and_push(text_section);   break;
+	case 3:	div_and_push(text_section);    break;
+	case 4:	mod_and_push(text_section);    break;
+	default:
+		break;
 	}
-	strcat(text_section,aux);
-}
-
-void operate_stack_operands(Data_type first_operand_data_type, Data_type second_operand_data_type, int op) {
-	Data_type data_types[2]; 
-	data_types[0] = first_operand_data_type;
-	data_types[1] = second_operand_data_type;
-	int i, reg;
-	char aux[50];
-	char temp[100];
-	char instruction[300] = "";
-	char operation[200] = "\txor eax, eax\n\txor ebx, ebx\n";
-	strcat(instruction, operation);
-	for(i = 0, reg = 97; i < 2; i++, reg++) {
-		switch(data_types[i]) {
-			case CHAR_T:
-			case SHORT_T:
-			case INT_T:
-			case FLOAT_T:
-				sprintf(aux,"\tpop WORD %cx\n", reg);
-				break;
-			case DOUBLE_T:
-			case LONG_T:
-			case PTR_T:
-				sprintf(aux,"\tpop e%cx\n", reg);
-				break;
-		}
-		strcat(instruction, aux);
-	}
-	sprintf(temp, "\t%sebx\n\tpush eax\n\n", op == 0 ? "add eax, " : op == 1 ? "sub eax, " : op == 2 ? "imul " : "div");
-	strcat(instruction, temp);
-	strcat(text_section, instruction);
-	
 }

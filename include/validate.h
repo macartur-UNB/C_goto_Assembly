@@ -28,4 +28,5 @@ int validate_local_declaration(Symbol* symbol,char* scope,
 						       Vector* scopes);
 int validate_global_declaration(Symbol* symbol,Vector* scopes);
 int validate_symbol_declaration(Symbol* symbol,char* scope,Vector* scopes);
+
 #endif
