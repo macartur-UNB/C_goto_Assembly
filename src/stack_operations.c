@@ -218,3 +218,65 @@ mod_and_push(char* text_section)
 	}
 	strcat(text_section,text);
 }
+
+
+int
+get_variable_position(char* name,char* current_function,Vector* scopes) {
+    SymbolTable* symbol_table = findTable(current_function, scopes);
+    if (!symbol_table) {
+        exit(EXIT_FAILURE);
+    }
+    SymbolTable* current = symbol_table->tail;
+    Symbol* s;
+    int counter = 0;
+    while(current->prev != NULL)
+    {
+        s = current->value;
+        counter += get_variable_size(current->value->data_type);
+        if(!strcmp(s->name, name)) {
+            return counter;
+        }
+        current = current->prev;
+    }
+
+    return -1;
+}
+
+Data_type
+get_variable_data_type(const char* name, char* current_function,Vector* scopes) {
+    SymbolTable* symbol_table = findTable(current_function, scopes);
+    if (!symbol_table) {
+        printf("ERRO TABELA NULA\n");
+        exit(EXIT_FAILURE);
+    }
+    SymbolTable* current = symbol_table->tail;
+    Symbol* s;
+    while(current->prev != NULL)
+    {
+        s = current->value;
+        printf("%s\n", s->name);
+        if(!strcmp(s->name, name)) {
+            return s->data_type;
+        }
+        current = current->prev;
+    }
+    exit(EXIT_FAILURE);
+}
+
+
+int
+get_variable_size(Data_type type) {
+    switch(type)
+    {
+        case CHAR_T:
+        case SHORT_T:
+        case INT_T:
+        case FLOAT_T:
+            return 2;
+        case DOUBLE_T:
+        case LONG_T:
+        case PTR_T:
+            return 4;
+    }
+}
+

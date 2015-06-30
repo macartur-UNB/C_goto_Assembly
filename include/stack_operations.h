@@ -21,5 +21,7 @@ void push_int_to_stack(char* text_section,char* text);
 void push_double_to_stack(char* text_section,char* text);
 void push_float_to_stack(char* text_section,char* text);
 void push_variable_to_stack(char* text_section,char* text);
-
+int  get_variable_position(char* name,char* current_function,Vector* scopes);
+Data_type get_variable_data_type(const char* name, char* current_function,Vector* scopes);
+int get_variable_size(Data_type type);
 #endif
