@@ -9,17 +9,20 @@ char nome;
 float data;
 
 int main(){
-    int age;
-    char letra = 's';
-    int x;
-    int y = 5;
-    int len = 10;
-    char name = "Teste";
-    x + 3 - 2;
-    return 0;
-}
-int add(){
-    int age = 14;
-    return 0;
-}
 
+    if ( 3+2 )
+    {
+    } 
+    else if(3+2)
+    {
+
+    }
+    else if(2+3)
+    {
+    
+    }
+    else 
+    {
+
+    }
+}

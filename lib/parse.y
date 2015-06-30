@@ -64,8 +64,21 @@ Scope:
 	| Scope Attribution	
 	| Scope Local_declaration 			 
 	| Scope RETURN Literal SEMICOLON   
-	| Scope Expression SEMICOLON;
+	| Scope Expression SEMICOLON
+    | Scope Logic 
 	;
+
+Logic:
+    | Logic_if ELSE Logic                                                          { printf("else if");}
+    | Logic_if ELSE START_KEYS Scope END_KEYS                                      { printf("else");}
+    ;
+
+Logic_if:
+    IF START_PARENTHESES Expression END_PARENTHESES START_KEYS Scope END_KEYS   { printf("IF"); }
+    ;
+
+
+
 Function:
 	C_TYPE IDENTIFIER	START_PARENTHESES	END_PARENTHESES	 
         {  
@@ -88,6 +101,7 @@ Global_declaration:
             printf("Global Initialized Variable %s = %s\n", $2, $4);
         }
 	;
+
 Local_declaration:
 	/* Local Uninitialized Variable */
     C_TYPE IDENTIFIER SEMICOLON 
@@ -160,7 +174,6 @@ Expression:
 Attribution:
 	IDENTIFIER RECEIVE Expression SEMICOLON {}
 	;
-
 	
 
 %%
