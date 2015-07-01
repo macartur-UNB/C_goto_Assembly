@@ -1,16 +1,61 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char hair = 'H';
-char sex = 'M';
-int teste = 235;
-float precision = 10.5f;
-char nome;
-float data;
+char character='A';
+int age;
+double weight= 2.5;
 
+
+/*
+ *  Main function
+ * */
 int main(){
-    int m;
-    int n;
-    int x;
-    x = 2 + 3;
+    int age;
+
+
+
+    if (3 >= 4)
+    {
+        3 + 4;
+    }else
+    {
+        4 - 6;
+    }
+
+
+    return 0;
 }
+
+
+/*
+ * subtract function
+ *
+ * */
+int sub()
+{
+    int age;
+    return 0;
+}
+
+/*
+ *  Addition function
+ *
+ * */
+double add()
+{
+    int age;
+    return 0.0;
+}
+
+
+/*
+ *  wrong add function
+ *
+ * */
+
+char add()
+{
+    int age;
+    return '0';
+}
+
