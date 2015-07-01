@@ -61,8 +61,7 @@ Declaration:
     | Function START_KEYS  Scope  END_KEYS			{	end_function(); 	}
 	;
 Scope:
-	/* empty */
-	| Scope Attribution	
+	/* empty */	
 	| Scope Local_declaration 			 
 	| Scope RETURN Literal SEMICOLON   
 	| Scope Expression SEMICOLON
@@ -182,9 +181,10 @@ Expression:
                                         make_operation(4);
 										}
 
-	;
-Attribution:
-	IDENTIFIER RECEIVE Expression SEMICOLON {}
+    | Expression RECEIVE Expression {
+        printf("IDENTIFIED\n");
+        assign($1);
+    }
 	;
 	
 

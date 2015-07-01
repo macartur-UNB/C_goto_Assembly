@@ -9,20 +9,8 @@ char nome;
 float data;
 
 int main(){
-
-    if ( 3+2 )
-    {
-    } 
-    else if(3+2)
-    {
-
-    }
-    else if(2+3)
-    {
-    
-    }
-    else 
-    {
-
-    }
+    int m;
+    int n;
+    int x;
+    x = 2 + 3;
 }
