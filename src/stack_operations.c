@@ -1,5 +1,11 @@
 #include "stack_operations.h"
 
+extern Vector* scopes;
+extern char* current_function;
+extern char* bss_section;
+extern char* data_section;
+extern char* text_section;
+
 typedef enum {DB,DW,DD} TYPE_TOP_STACK;
 int type_of_top_stack = 0;
 int alternate_register = 0;
@@ -221,22 +227,26 @@ mod_and_push(char* text_section)
 
 
 int
-get_variable_position(char* name,char* current_function,Vector* scopes) {
-    SymbolTable* symbol_table = findTable(current_function, scopes);
+get_variable_position(char* name,char* c, Vector* v) {
+    SymbolTable* symbol_table = findTable(c, v);
     if (!symbol_table) {
+    		printf("EXIT FAILURE!\n");
         exit(EXIT_FAILURE);
     }
-    SymbolTable* current = symbol_table->tail;
+    SymbolTable* current = symbol_table->head;
     Symbol* s;
     int counter = 0;
-    while(current->prev != NULL)
+    while(current != NULL)
     {
         s = current->value;
-        counter += get_variable_size(current->value->data_type);
+        
         if(!strcmp(s->name, name)) {
             return counter;
         }
-        current = current->prev;
+
+        counter += get_variable_size(current->value->data_type);
+
+        current = current->next;
     }
 
     return -1;
@@ -280,3 +290,21 @@ get_variable_size(Data_type type) {
     }
 }
 
+void assign(char* variable) {
+	int offset = get_variable_position(variable, current_function, scopes);
+	printf("\n\noffset: %d\n\n", offset);
+	int variable_size = get_variable_size(get_variable_data_type(variable, current_function, scopes));
+	char instruction[1000];
+	switch(variable_size) {
+		case 1:
+			sprintf(instruction, "\tpop WORD ax\n\tmov BYTE [esp + %d], al\n", offset);
+			break;
+		case 2:
+			sprintf(instruction, "\tpop WORD ax\n\tmov WORD [esp + %d], ax\n", offset);
+			break;
+		case 4:
+			sprintf(instruction, "\tpop eax\n\tmov [esp + %d], eax\n", offset);
+			break;
+	}
+	strcat(text_section, instruction);
+}

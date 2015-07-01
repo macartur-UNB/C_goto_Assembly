@@ -9,7 +9,7 @@ char* bss_section;
 char* data_section;
 char* text_section;
 char* header_section;
-char* current_function; 
+char* current_function;
 
 /*
  *	VECTOR TO ALL SCOPES
