@@ -33,6 +33,7 @@
 %token EQUAL DIFFERENT NOT
 
 
+
 %token IF ELSE
 %token WHILE DO CASE SWITCH
 %token AND_AND OR_OR
@@ -69,15 +70,26 @@ Scope:
 	;
 
 Logic:
-    | Logic_if ELSE Logic                                                          { printf("else if");}
-    | Logic_if ELSE START_KEYS Scope END_KEYS                                      { printf("else");}
+    Logic_if                                                                    {printf("Logic_if");} 
     ;
 
 Logic_if:
-    IF START_PARENTHESES Expression END_PARENTHESES START_KEYS Scope END_KEYS   { printf("IF"); }
+    IF START_PARENTHESES Logic_Expression END_PARENTHESES START_KEYS Scope END_KEYS   { printf("IF"); }
+    | Logic_if ELSE Logic_if                                                    { printf("else");}
+    | Logic_if ELSE START_KEYS Scope END_KEYS                                   {printf("if else");}
     ;
 
-
+Logic_Expression:
+    Expression 
+    | Expression AND_AND Expression 
+    | Expression OR_OR Expression 
+    | Expression BIGGER_THAN Expression 
+    | Expression LESS_THAN Expression
+    | Expression BIGGER_OR_EQUAL Expression
+    | Expression EQUAL Expression
+    | Expression DIFFERENT Expression
+    | NOT Expression 
+    ;
 
 Function:
 	C_TYPE IDENTIFIER	START_PARENTHESES	END_PARENTHESES	 

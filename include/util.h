@@ -8,6 +8,7 @@
 #include "symbol_table.h"
 #include "symbol.h"
 #include "validate.h"
+#include "logic_operation.h"
 
 
 /*
